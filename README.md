@@ -1,4 +1,5 @@
-<h1 align="center">📜 <strong>Docs - Share</strong> 🤝</h1>
+## This is an upgraded version of Docs-Share.
+<!-- <h1 align="center">📜 <strong>Docs - Share</strong> 🤝</h1>
 
 <div align="center">
     <img src="https://skillicons.dev/icons?i=react,vite,tailwind,css,appwrite" alt="Tech Stack" />
@@ -94,4 +95,4 @@ Contributions are what make the open-source community such an amazing place to l
 
 ## 💬 Feedback
 
-I’d love to hear from you! If you have any feedback or suggestions, please open an issue or submit a pull request. Your stars ⭐ and contributions help me keep improving and maintaining this project! 🙌
+I’d love to hear from you! If you have any feedback or suggestions, please open an issue or submit a pull request. Your stars ⭐ and contributions help me keep improving and maintaining this project! 🙌 -->
