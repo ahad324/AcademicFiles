@@ -3,19 +3,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 :root{
   --accent-color:rgba(22,163,74,1);
   --secondary-color:rgba(67,56,202,1);
   --error-color: rgb(239 68 68) ;
   --secondary-color-hover:rgb(79,70,229,1);
   --default-text-color:white;
+  --sidebar-bg:var(--secondary-color);
 }
 body.dark{
   --bg-color:rgb(39 39 42 / 1);
-  --text-color:white;
+  --text-color:white; 
   --text-hover-color:black;
   --card-bg:rgb(24,24,27,0.9);
   --eye-bg:rgb(82,82,91,1);
+  --sidebar-bg:var(--bg-color);
 }
 body.light{
   --bg-color:rgb(196 196 203);

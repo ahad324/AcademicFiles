@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 // Icons Imports
 import {
   FaBars,
   FaTimes,
   FaChartBar,
-  FaComments,
-  FaUser,
   FaCogs,
-  FaTasks,
   FaClipboardList,
-  FaTools,
   FaTrashAlt,
+  FaTools,
+  FaTasks,
 } from "react-icons/fa"; // Import icons from react-icons
+import { AiOutlineFile } from "react-icons/ai";
 import { IoMdCloudDownload } from "react-icons/io";
 import { MdLogout } from "react-icons/md";
 
@@ -42,9 +41,9 @@ const Dashboard = () => {
   return (
     <section className="flex overflow-hidden h-screen">
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 transition-transform transform ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[--sidebar-bg] transition-transform transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 bg-[--secondary-color]`}
+        } md:relative md:translate-x-100`}
       >
         <div className="flex flex-col h-full overflow-y-auto shadow-2xl">
           <div className="flex flex-col flex-grow pt-5">
@@ -53,41 +52,59 @@ const Dashboard = () => {
                 {APP_NAME}
               </h2>
               <button
-                className="md:hidden rounded-lg focus:outline-none"
+                className="rounded-lg text-[--default-text-color] focus:outline-none focus:shadow-outline md:hidden"
                 onClick={toggleSidebar}
               >
-                <FaTimes className="w-6 h-6 bg-[--default-text-color]" />
+                <FaTimes className="w-6 h-6" />
               </button>
             </div>
             <nav className="flex flex-col flex-grow px-4 mt-5 space-y-1">
               <ul>
                 {/* Navigation items */}
                 <li>
-                  <Link
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform bg-[--secondary-color-hover] rounded-lg hover:bg-indigo-500"
+                  <NavLink
+                    className={({ isActive }) =>
+                      `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg ${
+                        isActive
+                          ? "bg-indigo-500 text-white"
+                          : "text-[--default-text-color] hover:bg-indigo-500"
+                      }`
+                    }
                     to="overview"
                   >
                     <FaChartBar className="w-4 h-4" />
                     <span className="ml-4"> Overview</span>
-                  </Link>
+                  </NavLink>
                 </li>
                 <li>
-                  <Link
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg hover:border-indigo-800 focus:shadow-outline hover:bg-[--secondary-color-hover]"
+                  <NavLink
+                    className={({ isActive }) =>
+                      `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-[--default-text-color] ${
+                        isActive
+                          ? "bg-indigo-500"
+                          : "text-[--default-text-color] hover:bg-indigo-500"
+                      }`
+                    }
                     to="files"
                   >
-                    <FaComments className="w-4 h-4" />
+                    <AiOutlineFile className="w-4 h-4" />
                     <span className="ml-4">All Files </span>
-                  </Link>
+                  </NavLink>
                 </li>
                 <li>
-                  <a
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg hover:border-indigo-800 focus:shadow-outline hover:bg-[--secondary-color-hover]"
-                    href="#"
+                  <NavLink
+                    className={({ isActive }) =>
+                      `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg ${
+                        isActive
+                          ? "bg-indigo-500 text-white"
+                          : "text-[--default-text-color] hover:bg-indigo-500"
+                      }`
+                    }
+                    to="actions"
                   >
-                    <FaUser className="w-4 h-4" />
-                    <span className="ml-4">User</span>
-                  </a>
+                    <FaTools className="w-4 h-4" />
+                    <span className="ml-4">Actions</span>
+                  </NavLink>
                 </li>
                 <li>
                   <a
@@ -217,14 +234,22 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col flex-1 w-full overflow-hidden">
-        <header className="w-full bg-white shadow">
+      <div
+        className={`flex flex-col flex-1 w-full overflow-hidden transition-all duration-300 ${
+          isSidebarOpen ? "md:relative" : "md:absolute h-full"
+        }`}
+      >
+        <header className="w-full bg-[--bg-color] shadow text-[--text-color]">
           <div className="flex items-center justify-between p-4">
             <button
-              className="hidden rounded-lg focus:outline-none focus:shadow-outline"
+              className="rounded-lg focus:outline-none focus:shadow-outline"
               onClick={toggleSidebar}
             >
-              <FaBars className="w-6 h-6 text-gray-700" />
+              {isSidebarOpen ? (
+                <FaTimes className="w-6 h-6" />
+              ) : (
+                <FaBars className="w-6 h-6" />
+              )}
             </button>
             <div className="flex flex-col">
               <h1 className="text-2xl font-semibold">Dashboard</h1>
@@ -239,8 +264,8 @@ const Dashboard = () => {
             </div>
           </div>
         </header>
-        <main className="flex-1 p-4 overflow-auto">
-          <div className="w-full h-full border-4 border-dashed border-gray-200">
+        <main className="flex-1 flex flex-col border-2 border-[--text-color] h-full transition-all duration-300">
+          <div className="w-full h-full">
             <Outlet />
           </div>
         </main>

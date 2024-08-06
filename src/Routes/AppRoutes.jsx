@@ -10,6 +10,12 @@ import Dashboard from "../components/Dashboard/Dashboard";
 // Dashboard Components
 import Overview from "../components/Dashboard/Overview";
 import Files from "../components/Dashboard/Files";
+import Actions from "../components/Dashboard/Actions";
+// Actions Components
+import CreateTeacher from "../components/Dashboard/Actions/CreateTeacher";
+import CreateURL from "../components/Dashboard/Actions/CreateURL";
+import AllTeachers from "../components/Dashboard/Actions/AllTeachers";
+import AllURLs from "../components/Dashboard/Actions/AllURLs";
 
 const AppRoutes = () => {
   return (
@@ -17,7 +23,7 @@ const AppRoutes = () => {
       <Route
         path="/"
         element={
-          <section>
+          <section className="w-full h-full">
             <Background />
             <Foreground />
           </section>
@@ -27,8 +33,13 @@ const AppRoutes = () => {
         <Route path="/dashboard/*" element={<Dashboard />}>
           <Route path="overview" element={<Overview />} />
           <Route path="files" element={<Files />} />
+          <Route path="actions/*" element={<Actions />}>
+            <Route path="createteacher" element={<CreateTeacher />} />
+            <Route path="createurl" element={<CreateURL />} />
+            <Route path="allteachers" element={<AllTeachers />} />
+            <Route path="allurls" element={<AllURLs />} />
+          </Route>
         </Route>
-        {/* Add other role-based routes here */}
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="*" element={<Error />} />

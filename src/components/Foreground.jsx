@@ -19,13 +19,8 @@ const Foreground = () => {
   return (
     <div
       ref={ref}
-      className={`top-0 left-0 z-[3] w-full h-full p-5 ${
-        isAuthenticated
-          ? data.length > 0
-            ? "relative overflow-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-4 gap-5"
-            : "flex flex-col justify-center items-center"
-          : "fixed overflow-auto flex flex-wrap gap-5"
-      }`}
+      // fixed top-0 left-0 z-[3] w-full h-full flex justify-center items-center gap-10 flex-wrap p-5 overflow-auto
+      className={`relative top-0 left-0 z-[3] w-full h-full p-5 overflow-auto flex flex-wrap gap-10 justify-center items-center`}
     >
       {loading ? (
         <Loader />
