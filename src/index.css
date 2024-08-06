@@ -5,9 +5,10 @@
 @tailwind utilities;
 :root{
   --accent-color:rgba(22,163,74,1);
-  --secondary-color:rgba(59,130,246,1);
+  --secondary-color:rgba(67,56,202,1);
   --error-color: rgb(239 68 68) ;
-  --secondary-color-hover:rgb(29,78,216,1);
+  --secondary-color-hover:rgb(79,70,229,1);
+  --default-text-color:white;
 }
 body.dark{
   --bg-color:rgb(39 39 42 / 1);
@@ -26,12 +27,62 @@ body.light{
 *{
   font-family: "Poppins", sans-serif;
 }
-::selection{
+/* ::selection{
   color: var(--accent-color);
-}
+} */
 ::-webkit-scrollbar{
   display: none;
 }
 .card{
   cursor: grab;
 }
+
+/* General progress bar styling */
+.progress {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1em;
+  border-radius: 1em; /* Increase radius for smoother edges */
+  width: 100%;
+  background-color: var(--progress-bg-color, #f0f0f0); /* Light gray background */
+  overflow: hidden; /* Ensure the progress value doesn’t overflow */
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+}
+
+/* Animation for smooth progress transition */
+@keyframes progress-bar-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width, 100%);
+  }
+}
+
+.progress::-webkit-progress-bar {
+  background-color: var(--progress-bg-color, #f0f0f0); /* Light gray background */
+  border-radius: 1em; /* Increase radius for smoother edges */
+}
+
+.progress::-webkit-progress-value {
+  background-color: var(--accent-color); /* Filling color */
+  border-radius: 1em; /* Increase radius for smoother edges */
+  transition: width 0.4s ease; /* Smooth transition effect */
+  animation: progress-bar-fill 0.4s ease forwards; /* Animate progress bar */
+}
+
+.progress::-moz-progress-bar {
+  background-color: var(--accent-color); /* Filling color */
+  border-radius: 1em; /* Increase radius for smoother edges */
+  transition: width 0.4s ease; /* Smooth transition effect */
+  animation: progress-bar-fill 0.4s ease forwards; /* Animate progress bar */
+}
+
+.progress::-ms-fill {
+  background-color: var(--accent-color); /* Filling color */
+  border-radius: 1em; /* Increase radius for smoother edges */
+  transition: width 0.4s ease; /* Smooth transition effect */
+  animation: progress-bar-fill 0.4s ease forwards; /* Animate progress bar */
+}
+

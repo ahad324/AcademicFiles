@@ -1,30 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegFileAlt, FaEye, FaTrashAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Loader from "./Loader";
 import { IoMdCloudDownload } from "react-icons/io";
+import { useData } from "../contexts/DataContext";
+import { useAuth } from "../contexts/AuthContext";
 
-const Card = ({ data, reference, loading, onDelete, isAdmin }) => {
+const Card = ({ data, reference }) => {
+  const { handleFileDelete, handleFileDownload } = useData();
+  const { isAuthenticated } = useAuth(); // Use AuthContext to get isAuthenticated
+  const [loading, setloading] = useState(true);
+  useEffect(() => {
+    setloading(false);
+  }, []);
+
   const handleDownload = async () => {
-    try {
-      const response = await fetch(data.url);
-      if (!response.ok) throw new Error("Network response was not ok");
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = data.desc;
-      document.body.appendChild(link);
-      link.click();
-
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Download error:", error);
-    }
+    handleFileDownload(data);
   };
+
   const handleView = () => {
     const link = document.createElement("a");
     link.href = data.url;
@@ -33,7 +26,9 @@ const Card = ({ data, reference, loading, onDelete, isAdmin }) => {
   };
 
   const handleDelete = () => {
-    onDelete(data.id);
+    setloading(true);
+    handleFileDelete(data.id);
+    setloading(false);
   };
 
   return (
@@ -55,10 +50,10 @@ const Card = ({ data, reference, loading, onDelete, isAdmin }) => {
             {data.desc}
           </p>
           <div className="footer absolute bottom-0 w-full left-0">
-            <div className="flex items-center justify-between py-3  px-8  mb-3">
+            <div className="flex items-center justify-between py-3 px-8 mb-3">
               <h5>{data.filesize}</h5>
               <span
-                className="w-7 h-7 bg-[--eye-bg] rounded-full shadow-custom transition-colors flex items-center justify-center cursor-pointer  backdrop-blur-md hover:bg-[--accent-color] text-[--text-hover-color]"
+                className="w-7 h-7 bg-[--eye-bg] rounded-full shadow-custom transition-colors flex items-center justify-center cursor-pointer backdrop-blur-md hover:bg-[--accent-color] text-[--text-hover-color]"
                 onClick={handleView}
               >
                 <FaEye
@@ -67,9 +62,9 @@ const Card = ({ data, reference, loading, onDelete, isAdmin }) => {
                   title="View Online"
                 />
               </span>
-              {isAdmin && (
+              {isAuthenticated && (
                 <span
-                  className="w-7 h-7 bg-[--eye-bg] rounded-full shadow-custom transition-colors flex items-center justify-center cursor-pointer  backdrop-blur-md hover:bg-[--accent-color] text-[--text-hover-color]"
+                  className="w-7 h-7 bg-[--eye-bg] rounded-full shadow-custom transition-colors flex items-center justify-center cursor-pointer backdrop-blur-md hover:bg-[--error-color] text-[--text-hover-color]"
                   onClick={handleDelete}
                 >
                   <FaTrashAlt

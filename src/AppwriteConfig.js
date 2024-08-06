@@ -1,4 +1,4 @@
-import { Client, Account, Storage } from 'appwrite';
+import { Client, Account, Storage, ID } from 'appwrite';
 
 const client = new Client()
   .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT)
@@ -9,4 +9,4 @@ const storage = new Storage(client);
 const BUCKET_ID = import.meta.env.VITE_APPWRITE_BUCKET_ID;
 const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID;
 
-export { client, account, storage, BUCKET_ID, PROJECT_ID };
+export { client, account, storage, BUCKET_ID, PROJECT_ID, ID };
