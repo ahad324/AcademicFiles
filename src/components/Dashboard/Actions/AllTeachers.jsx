@@ -1,57 +1,70 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAction } from "@contexts/ActionsContext";
-import { FaTrash } from "react-icons/fa";
+import ProfileBadge from "../../ProfileBadge";
 
 const AllTeachers = () => {
-  const { listTeachers, deleteTeacher } = useAction();
-  const [teachers, setTeachers] = useState([]);
+  const { teachers, teacherImages, listTeachers } = useAction();
 
-  const fetchTeachers = async () => {
-    const teacherList = await listTeachers();
-    setTeachers(teacherList);
-  };
-
-  const handleDelete = async (userId) => {
-    await deleteTeacher(userId);
-    fetchTeachers();
-  };
+  const headers = ["Sr No.", "ID", "Teacher", "Password"];
 
   useEffect(() => {
-    fetchTeachers();
+    listTeachers();
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen p-4">
-      <h2 className="text-2xl mb-4 text-[--text-color] font-bold">
-        Teacher List
-      </h2>
-      <div className="w-full max-w-4xl overflow-x-auto">
-        <table className="w-full table-auto">
-          <thead className="bg-[--secondary-color] text-[--default-text-color]">
-            <tr>
-              <th className="p-2">Name</th>
-              <th className="p-2">Email</th>
-              <th className="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-[--card-bg]">
-            {teachers.map((teacher) => (
-              <tr key={teacher.$id} className="border-b">
-                <td className="p-2">{teacher.username}</td>
-                <td className="p-2">{teacher.email}</td>
-                <td className="p-2">
-                  <button
-                    onClick={() => handleDelete(teacher.$id)}
-                    className="text-[--error-color] hover:text-red-700"
-                  >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
+    <div className="relative overflow-x-auto shadow-md rounded-lg border border-[--text-color]">
+      <table className="w-full text-sm text-left rtl:text-right text-[--light-gray-color] ">
+        <caption className="p-5 text-lg font-semibold text-center  bg-[--dark-gray-color] ">
+          Teachers List
+        </caption>
+        <thead className="text-xs text-[--light-gray-color] uppercase bg-[--medium-gray-color]">
+          <tr>
+            {headers.map((header, i) => (
+              <th key={i} scope="col" className="px-6 py-3">
+                {header}
+              </th>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </tr>
+        </thead>
+        <tbody>
+          {teachers.length > 0 ? (
+            teachers.map((teacher, i) => (
+              <tr
+                key={teacher.TeacherID}
+                className=" border-b bg-[--dark-gray-color]"
+              >
+                <td
+                  scope="row"
+                  className="px-6 py-4 text-[--default-text-color]"
+                >
+                  {i + 1}
+                </td>
+                <td className="px-6 py-4">{teacher.TeacherID}</td>
+                <th
+                  scope="row"
+                  className="flex items-center px-6 py-4 whitespace-nowrap "
+                >
+                  <ProfileBadge
+                    ImageUrl={teacherImages[teacher.TeacherID]}
+                    name={teacher.username}
+                    email={teacher.email}
+                  />
+                </th>
+                <td className="px-6 py-4">{teacher.password}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={headers.length}
+                className="px-6 py-4 text-center text-[--error-color] bg-[--dark-gray-color]"
+              >
+                No teachers available
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

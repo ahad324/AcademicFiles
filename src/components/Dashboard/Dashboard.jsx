@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 // Icons Imports
 import {
@@ -6,10 +6,8 @@ import {
   FaTimes,
   FaChartBar,
   FaCogs,
-  FaClipboardList,
   FaTrashAlt,
   FaTools,
-  FaTasks,
 } from "react-icons/fa"; // Import icons from react-icons
 import { AiOutlineFile } from "react-icons/ai";
 import { IoMdCloudDownload } from "react-icons/io";
@@ -19,24 +17,26 @@ import { useData } from "../../contexts/DataContext";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Dashboard = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { handleLogout } = useAuth();
 
   const {
     APP_NAME,
     data,
-    storageOccupied,
-    storageTotal,
     downloadAllFiles,
     deleteAllFiles,
+    getuserdetails,
+    userDetails,
+    storageData,
   } = useData();
-
-  const percentageUsed = (parseFloat(storageOccupied) / storageTotal) * 100;
-  const formattedPercentage = percentageUsed.toFixed(2);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  useEffect(() => {
+    getuserdetails();
+  }, []);
 
   return (
     <section className="flex overflow-hidden h-screen">
@@ -64,10 +64,10 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     className={({ isActive }) =>
-                      `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg ${
+                      `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-[--default-text-color] ${
                         isActive
-                          ? "bg-indigo-500 text-white"
-                          : "text-[--default-text-color] hover:bg-indigo-500"
+                          ? "bg-indigo-500"
+                          : "hover:bg-[--secondary-color-hover]"
                       }`
                     }
                     to="overview"
@@ -82,7 +82,7 @@ const Dashboard = () => {
                       `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-[--default-text-color] ${
                         isActive
                           ? "bg-indigo-500"
-                          : "text-[--default-text-color] hover:bg-indigo-500"
+                          : "hover:bg-[--secondary-color-hover]"
                       }`
                     }
                     to="files"
@@ -94,10 +94,10 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     className={({ isActive }) =>
-                      `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg ${
+                      `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-[--default-text-color] ${
                         isActive
-                          ? "bg-indigo-500 text-white"
-                          : "text-[--default-text-color] hover:bg-indigo-500"
+                          ? "bg-indigo-500"
+                          : "hover:bg-[--secondary-color-hover]"
                       }`
                     }
                     to="actions"
@@ -107,49 +107,25 @@ const Dashboard = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <a
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg hover:border-indigo-800 focus:shadow-outline hover:bg-[--secondary-color-hover]"
-                    href="#"
+                  <NavLink
+                    className={({ isActive }) =>
+                      `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-[--default-text-color] ${
+                        isActive
+                          ? "bg-indigo-500"
+                          : "hover:bg-[--secondary-color-hover]"
+                      }`
+                    }
+                    to="settings"
                   >
                     <FaCogs className="w-4 h-4" />
                     <span className="ml-4">Settings</span>
-                  </a>
+                  </NavLink>
                 </li>
               </ul>
-              <p className="px-4 pt-4 font-medium text-[--default-text-color] uppercase">
-                Shortcuts
-              </p>
               <ul>
                 <li>
-                  <a
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg hover:border-indigo-800 focus:shadow-outline hover:bg-[--secondary-color-hover]"
-                    href="#"
-                  >
-                    <FaTasks className="w-4 h-4" />
-                    <span className="ml-4"> Tasks</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg hover:border-indigo-800 focus:shadow-outline hover:bg-[--secondary-color-hover]"
-                    href="#"
-                  >
-                    <FaClipboardList className="w-4 h-4" />
-                    <span className="ml-4">Reports</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg hover:border-indigo-800 focus:shadow-outline hover:bg-[--secondary-color-hover]"
-                    href="#"
-                  >
-                    <FaTools className="w-4 h-4" />
-                    <span className="ml-4"> Tools</span>
-                  </a>
-                </li>
-                <li>
                   <button
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg hover:border-indigo-800 focus:shadow-outline hover:bg-[--secondary-color-hover]"
+                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform rounded-lg  hover:bg-[--accent-color]"
                     onClick={downloadAllFiles}
                   >
                     <IoMdCloudDownload className="w-4 h-4" />
@@ -161,7 +137,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <button
-                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg hover:border-indigo-800 focus:shadow-outline hover:bg-[--error-color]"
+                    className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform rounded-lg hover:bg-[--error-color]"
                     onClick={deleteAllFiles}
                   >
                     <FaTrashAlt className="w-4 h-4" />
@@ -177,17 +153,18 @@ const Dashboard = () => {
                 <h2 className="px-1 py-1 rounded-lg bg-[--default-text-color] text-[--accent-color] text-sm font-semibold w-fit flex ">
                   <p
                     className={`${
-                      (formattedPercentage >= 50 &&
-                        formattedPercentage <= 80 &&
+                      (storageData.percentage >= 50 &&
+                        storageData.percentage <= 80 &&
                         "text-yellow-600") ||
-                      (formattedPercentage > 80 && "text-[--error-color]")
+                      (storageData.percentage > 80 && "text-[--error-color]")
                     }`}
                   >
-                    {parseFloat(storageOccupied).toFixed(2)}MB
+                    {/* {parseFloat(storageOccupied).toFixed(2)}MB */}
+                    {storageData.occupied}MB
                   </p>
                   /{" "}
                   <p>
-                    {storageTotal}
+                    {storageData.total}
                     MB
                   </p>
                 </h2>
@@ -195,40 +172,39 @@ const Dashboard = () => {
               <div className="w-full h-4 bg-[--default-text-color] rounded-2xl overflow-hidden mt-2">
                 <div
                   className="h-full bg-[--accent-color] rounded-2xl transition-all duration-500 ease-in-out"
-                  style={{ width: `${formattedPercentage}%` }}
+                  style={{ width: `${storageData.percentage}%` }}
                 ></div>
               </div>
               <div className="text-center text-xl text-[--default-text-color] font-semibold">
-                {formattedPercentage}%
+                {storageData.percentage}%
               </div>
 
               <span
-                className="my-3 shadow-custom inline-flex items-center w-full px-4 py-2 mt-1 text-base bg-[--error-color] text-[--default-text-color] transition duration-500 ease-in-out transform border-indigo-800 rounded-lg cursor-pointer"
+                className="my-3 shadow-custom inline-flex items-center w-full px-4 py-2 mt-1 text-base bg-[--error-color] text-[--default-text-color] transition duration-500 ease-in-out transform  rounded-lg cursor-pointer"
                 onClick={handleLogout}
               >
                 <MdLogout className="w-6 h-6" />
                 <span className="ml-4 text-xl"> Logout</span>
               </span>
-              <div className="flex-shrink-0 p-4 px-4 bg-[--secondary-color-hover]">
-                <a href="#" className="flex-shrink-0 block w-full group">
-                  <div className="flex items-center">
-                    <div>
-                      <img
-                        className="inline-block rounded-full h-9 w-9"
-                        src="https://avatars.githubusercontent.com/u/106489451?v=4"
-                        alt=""
-                      />
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-[--default-text-color]">
-                        Tom Cook
-                      </p>
-                      <p className="text-xs font-medium text-indigo-200 group-hover:text-[--default-text-color]">
-                        View profile
-                      </p>
-                    </div>
+              <div className="flex items-center text-left p-3 bg-[--dark-gray-color] rounded-lg lg:absolute bottom-2">
+                <div className="flex items-center">
+                  <div>
+                    <img
+                      className="inline-block rounded-full h-9 w-9 select-none"
+                      src={userDetails.imageUrl}
+                      alt="User Image"
+                      draggable={false}
+                    />
                   </div>
-                </a>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-[--default-text-color]">
+                      {userDetails.name}
+                    </p>
+                    <p className="text-xs font-medium text-indigo-200 group-hover:text-[--default-text-color]">
+                      {userDetails.email}
+                    </p>
+                  </div>
+                </div>
               </div>
             </nav>
           </div>
@@ -264,8 +240,8 @@ const Dashboard = () => {
             </div>
           </div>
         </header>
-        <main className="flex-1 flex flex-col border-2 border-[--text-color] h-full transition-all duration-300">
-          <div className="w-full h-full overflow-scroll">
+        <main className="flex-1 flex flex-col border-2 border-[--text-color] rounded-lg h-full transition-all duration-300">
+          <div className="w-full h-full overflow-scroll mb-12">
             <Outlet />
           </div>
         </main>

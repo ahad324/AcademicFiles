@@ -1,8 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { storage, BUCKET_ID, PROJECT_ID, client, ID } from "../AppwriteConfig";
+import {
+  storage,
+  account,
+  avatars,
+  BUCKET_ID,
+  PROJECT_ID,
+  client,
+  ID,
+} from "../AppwriteConfig";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import Loader from "../components/Loader";
 
 const MAX_FILE_SIZE_MB = 50; // Maximum file size in MB
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024; // Convert MB to bytes
@@ -17,7 +24,13 @@ export const DataProvider = ({ children }) => {
   const [error, setError] = useState("");
   const [deletingFileId, setDeletingFileId] = useState(null);
   const [storageOccupied, setStorageOccupied] = useState(0); // State for storage occupied
-  const [storageTotal, setStorageTotal] = useState(0); // State for total storage
+  // const [storageTotal, setStorageTotal] = useState(2048); // State for total storage
+  const [storageData, setStorageData] = useState({
+    total: 2048,
+    occupied: parseFloat(storageOccupied).toFixed(2),
+    percentage: "0.00",
+  });
+  const [userDetails, setUserDetails] = useState({});
 
   const APP_NAME = "AcademicFileRelay";
 
@@ -40,8 +53,6 @@ export const DataProvider = ({ children }) => {
           0
         );
         setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
-
-        setStorageTotal(2048);
       } catch (error) {
         console.error("Error fetching files:", error);
       } finally {
@@ -67,6 +78,18 @@ export const DataProvider = ({ children }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const percentageUsed =
+      (parseFloat(storageOccupied) / storageData.total) * 100;
+    const formattedPercentage = percentageUsed.toFixed(2);
+
+    setStorageData({
+      total: 2048,
+      occupied: parseFloat(storageOccupied).toFixed(2),
+      percentage: formattedPercentage,
+    });
+  }, [storageOccupied]);
+
   const handleFileUpload = async (file) => {
     if (file.size > MAX_FILE_SIZE_BYTES) {
       setError(`File size exceeds ${MAX_FILE_SIZE_MB} MB.`);
@@ -84,7 +107,7 @@ export const DataProvider = ({ children }) => {
     //   return false;
     // }
 
-    if (storageOccupied + file.size / (1024 * 1024) > storageTotal) {
+    if (storageOccupied + file.size / (1024 * 1024) > storageData.total) {
       setError("Not enough storage left.");
       return false;
     }
@@ -113,9 +136,7 @@ export const DataProvider = ({ children }) => {
     setDeletingFileId(fileId);
     try {
       await storage.deleteFile(BUCKET_ID, fileId);
-      // Update the data state by removing the deleted file
       setData((prevData) => prevData.filter((item) => item.id !== fileId));
-      // Update storageOccupied
       const updatedFiles = data.filter((item) => item.id !== fileId);
       const totalSize = updatedFiles.reduce(
         (acc, file) => acc + file.filesize,
@@ -198,14 +219,28 @@ export const DataProvider = ({ children }) => {
 
       await Promise.all(deletePromises);
 
-      // Clear the state after all deletions are complete
       setData([]);
-      setStorageOccupied(0); // Reset storage occupied
+      setStorageOccupied(0);
     } catch (error) {
       console.error("Error deleting all files:", error);
       setError("Error deleting all files. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getuserdetails = async () => {
+    try {
+      const user = await account.get();
+      const URL = avatars.getInitials(user.name);
+      setUserDetails({
+        name: user.name,
+        email: user.email,
+        imageUrl: URL.href,
+      });
+      // console.log(userDetails);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
     }
   };
 
@@ -221,7 +256,9 @@ export const DataProvider = ({ children }) => {
     downloadAllFiles,
     deleteAllFiles,
     storageOccupied,
-    storageTotal,
+    getuserdetails,
+    userDetails,
+    storageData,
     MAX_FILE_SIZE_MB,
     MAX_FILE_SIZE_BYTES,
   };

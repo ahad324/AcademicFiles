@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { account } from "../AppwriteConfig";
 import Loader from "../components/Loader";
 import { toast } from "react-toastify";
+import { GiConsoleController } from "react-icons/gi";
 
 const AuthContext = createContext();
 
@@ -48,7 +49,6 @@ export const AuthProvider = ({ children }) => {
       });
     }
   };
-
   const handleLogout = async () => {
     try {
       await account.deleteSession("current");
