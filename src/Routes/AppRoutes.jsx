@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Background from "../components/Background";
 import Foreground from "../components/Foreground";
 import Login from "../Auth/Login";
@@ -12,6 +12,7 @@ import Overview from "../components/Dashboard/Overview";
 import Files from "../components/Dashboard/Files";
 import Actions from "../components/Dashboard/Actions";
 // Actions Components
+import { ActionsProvider } from "../contexts/ActionsContext";
 import CreateTeacher from "../components/Dashboard/Actions/CreateTeacher";
 import CreateURL from "../components/Dashboard/Actions/CreateURL";
 import AllTeachers from "../components/Dashboard/Actions/AllTeachers";
@@ -30,10 +31,25 @@ const AppRoutes = () => {
         }
       />
       <Route element={<PrivateRoutes />}>
-        <Route path="/dashboard/*" element={<Dashboard />}>
+        <Route
+          path="/dashboard/"
+          element={<Navigate to="/dashboard/overview" />}
+        />
+        <Route path="/dashboard/" element={<Dashboard />}>
           <Route path="overview" element={<Overview />} />
           <Route path="files" element={<Files />} />
-          <Route path="actions/*" element={<Actions />}>
+          <Route
+            path="actions/"
+            element={<Navigate to="/dashboard/actions/createteacher" />}
+          />
+          <Route
+            path="actions/"
+            element={
+              <ActionsProvider>
+                <Actions />
+              </ActionsProvider>
+            }
+          >
             <Route path="createteacher" element={<CreateTeacher />} />
             <Route path="createurl" element={<CreateURL />} />
             <Route path="allteachers" element={<AllTeachers />} />

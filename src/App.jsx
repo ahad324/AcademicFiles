@@ -3,6 +3,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import Author from "./components/Author";
 import ThemeToggler from "./components/ThemeToggler";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // Context Imports
 import { AuthProvider } from "./contexts/AuthContext";
 import { DataProvider } from "./contexts/DataContext";
@@ -19,6 +21,7 @@ function App() {
           </DataProvider>
           <Author />
         </main>
+        <ToastContainer />
       </AuthProvider>
     </Router>
   );

@@ -10,7 +10,6 @@
   --error-color: rgb(239 68 68) ;
   --secondary-color-hover:rgb(79,70,229,1);
   --default-text-color:white;
-  --sidebar-bg:var(--secondary-color);
 }
 body.dark{
   --bg-color:rgb(39 39 42 / 1);
@@ -26,6 +25,7 @@ body.light{
   --text-hover-color:white;
   --card-bg:rgba(255, 255, 255, 0.2);
   --eye-bg:rgb(113 111 111 / 59%);
+  --sidebar-bg:var(--secondary-color);
 }
 *{
   font-family: "Poppins", sans-serif;
@@ -89,3 +89,18 @@ body.light{
   animation: progress-bar-fill 0.4s ease forwards; /* Animate progress bar */
 }
 
+.form {
+  @apply backdrop-blur-md border border-[--text-color] rounded-3xl p-6 shadow-custom w-full max-w-md;
+}
+
+.form input {
+  @apply p-2 border rounded w-full;
+}
+
+.form button {
+  @apply shadow-custom transition-colors bg-[--secondary-color] text-[--default-text-color] py-2 rounded w-full font-semibold hover:bg-[--secondary-color-hover];
+}
+
+.form .error {
+  @apply text-[--error-color] text-xs mt-1;
+}

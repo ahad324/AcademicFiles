@@ -1,15 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { account } from "../AppwriteConfig";
 import Loader from "../components/Loader";
+import { toast } from "react-toastify";
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+  const toastTimer = 3000;
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -27,15 +28,24 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const handleLogin = async (email, password) => {
+    const toastId = toast.loading("Logging in...");
     try {
-      setLoading(true);
       await account.createEmailPasswordSession(email, password);
       setIsAuthenticated(true);
+      toast.update(toastId, {
+        render: "Logged in successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: toastTimer, // Close after 3 seconds
+      });
     } catch (error) {
-      setError("Invalid Credentials!");
-      throw new Error(error);
-    } finally {
-      setLoading(false);
+      console.log(error);
+      toast.update(toastId, {
+        render: "Invalid Credentials.",
+        type: "error",
+        isLoading: false,
+        autoClose: toastTimer, // Close after 3 seconds
+      });
     }
   };
 
@@ -43,8 +53,10 @@ export const AuthProvider = ({ children }) => {
     try {
       await account.deleteSession("current");
       setIsAuthenticated(false);
+      toast.info("Logged out successfully!", { autoClose: toastTimer }); // Close after 3 seconds
     } catch (error) {
       console.error("Logout Error:", error);
+      toast.error("Failed to log out!", { autoClose: toastTimer }); // Close after 3 seconds
     }
   };
 
@@ -54,6 +66,7 @@ export const AuthProvider = ({ children }) => {
       return result.labels[0];
     } catch (error) {
       console.error("Failed to fetch Role:", error);
+      toast.error("Failed to fetch role!", { autoClose: toastTimer }); // Close after 3 seconds
       return null;
     }
   };
@@ -61,7 +74,6 @@ export const AuthProvider = ({ children }) => {
   const contextValue = {
     isAuthenticated,
     loading,
-    error,
     handleLogin,
     handleLogout,
     getRole,

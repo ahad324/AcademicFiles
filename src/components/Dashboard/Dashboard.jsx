@@ -265,7 +265,7 @@ const Dashboard = () => {
           </div>
         </header>
         <main className="flex-1 flex flex-col border-2 border-[--text-color] h-full transition-all duration-300">
-          <div className="w-full h-full">
+          <div className="w-full h-full overflow-scroll">
             <Outlet />
           </div>
         </main>
