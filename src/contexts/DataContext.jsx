@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 
 const MAX_FILE_SIZE_MB = 50; // Maximum file size in MB
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024; // Convert MB to bytes
+const TOTAL_STORAGE = 2048; // In MBs
 
 const DataContext = createContext();
 
@@ -26,11 +27,13 @@ export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
   const toastTimer = 3000;
-  const [data, setData] = useState([]);
+  const [allFiles, setAllFiles] = useState([]);
+  const [teacherFiles, setteacherFiles] = useState([]);
   const [urlID, seturlID] = useState(null);
+  const [teacherID, setteacherID] = useState(null);
   const [storageOccupied, setStorageOccupied] = useState(0); // State for storage occupied
   const [storageData, setStorageData] = useState({
-    total: 2048,
+    total: TOTAL_STORAGE,
     occupied: parseFloat(storageOccupied).toFixed(2),
     percentage: "0.00",
   });
@@ -46,9 +49,9 @@ export const DataProvider = ({ children }) => {
           id: file.$id,
           desc: file.name,
           filesize: `${(file.sizeOriginal / 1024).toFixed(2)} KB`,
-          url: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${file.$id}/view?project=${PROJECT_ID}`,
+          downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${file.$id}/download?project=${PROJECT_ID}`,
         }));
-        setData(filesData);
+        setAllFiles(filesData);
 
         // Calculate storage usage
         const totalSize = response.files.reduce(
@@ -56,25 +59,12 @@ export const DataProvider = ({ children }) => {
           0
         );
         setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
+        fetchTeacherFiles();
       } catch (error) {
         toast.error("Error fetching files.", { autoClose: toastTimer });
         console.error("Error fetching files:", error);
       }
     };
-    // const example = async () => {
-    //   const response = await databases.createDocument(
-    //     DATABASE_ID,
-    //     COLLECTION_ID_FILES,
-    //     ID.unique(),
-    //     {
-    //       TeacherID: "TeacherID",
-    //       urlId: "urlId",
-    //       File: ["ahad", "gujjar", "132123"],
-    //     }
-    //   );
-    //   console.log(response);
-    // };
-    // example();
     fetchFiles();
 
     // Setting up for Realtime-Updates
@@ -99,12 +89,69 @@ export const DataProvider = ({ children }) => {
     const formattedPercentage = percentageUsed.toFixed(2);
 
     setStorageData({
-      total: 2048,
+      total: TOTAL_STORAGE,
       occupied: parseFloat(storageOccupied).toFixed(2),
       percentage: formattedPercentage,
     });
   }, [storageOccupied]);
 
+  const getProfileImage = async (initials) => {
+    try {
+      const avatarURL = avatars.getInitials(initials);
+      return avatarURL.href;
+    } catch (error) {
+      console.error("Error getting profile image:", error);
+      return "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png";
+    }
+  };
+
+  const getUserID = async () => {
+    try {
+      // Get the currently logged-in user's ID
+      const acc = await account.get();
+      const id = acc.$id;
+      return id;
+    } catch (error) {
+      console.error("Error getting User ID.");
+      throw error;
+    }
+  };
+
+  const fetchTeacherFiles = async () => {
+    const toastId = toast.loading("Fetching Files...");
+    try {
+      // Check if id is passed otherwise get the current user id,
+      const ID = await getUserID();
+
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTION_ID_FILES,
+        [Query.equal("TeacherID", ID)]
+      );
+
+      const filesData = response.documents.map((file) => ({
+        id: file.$id,
+        desc: file.File[1],
+        filesize: file.File[2],
+        downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${file.$id}/download?project=${PROJECT_ID}`,
+      }));
+      setteacherFiles(filesData);
+      toast.update(toastId, {
+        render: "",
+        type: "success",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Failed to fetch files.Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+      console.error("Error fetching files by for teacher:", error);
+    }
+  };
   const handleFileUpload = async (file) => {
     if (file.size > MAX_FILE_SIZE_BYTES) {
       toast.error(`File size exceeds ${MAX_FILE_SIZE_MB} MB.`, {
@@ -112,7 +159,6 @@ export const DataProvider = ({ children }) => {
       });
       return false;
     }
-
     if (storageOccupied + file.size / (1024 * 1024) > storageData.total) {
       toast.error("Not enough storage left.", { autoClose: toastTimer });
       return false;
@@ -122,12 +168,21 @@ export const DataProvider = ({ children }) => {
       const response = await storage.createFile(BUCKET_ID, ID.unique(), file);
       const fileData = {
         id: response.$id,
-        name: response.name,
         desc: response.name,
         filesize: `${(file.size / 1024).toFixed(2)} KB`,
-        url: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${response.$id}/view?project=${PROJECT_ID}`,
+        downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${response.$id}/download?project=${PROJECT_ID}`,
       };
-      setData([...data, fileData]);
+      await databases.createDocument(
+        DATABASE_ID,
+        COLLECTION_ID_FILES,
+        response.$id,
+        {
+          TeacherID: teacherID,
+          urlId: urlID,
+          File: [fileData.id, fileData.desc, fileData.filesize],
+        }
+      );
+      setAllFiles([...allFiles, fileData]);
       setStorageOccupied((prev) => prev + file.size / (1024 * 1024)); // Update storage occupied
       toast.success("File uploaded successfully.", { autoClose: toastTimer });
       return true;
@@ -142,9 +197,16 @@ export const DataProvider = ({ children }) => {
 
   const handleFileDelete = async (fileId) => {
     try {
-      await storage.deleteFile(BUCKET_ID, fileId);
-      setData((prevData) => prevData.filter((item) => item.id !== fileId));
-      const updatedFiles = data.filter((item) => item.id !== fileId);
+      const res = await storage.deleteFile(BUCKET_ID, fileId);
+      const response = await databases.deleteDocument(
+        DATABASE_ID,
+        COLLECTION_ID_FILES,
+        fileId
+      );
+      setAllFiles((prevFiles) =>
+        prevFiles.filter((item) => item.id !== fileId)
+      );
+      const updatedFiles = allFiles.filter((item) => item.id !== fileId);
       const totalSize = updatedFiles.reduce(
         (acc, file) => acc + file.filesize,
         0
@@ -157,38 +219,18 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const handleFileDownload = async (data) => {
-    try {
-      const result = await storage.getFileDownload(BUCKET_ID, data.id);
-      const downloadUrl = result;
-
-      if (!downloadUrl) throw new Error("Download URL was not retrieved");
-
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = data.desc;
-      document.body.appendChild(link);
-      link.click();
-
-      link.remove();
-      toast.success("File downloaded successfully.", { autoClose: toastTimer });
-    } catch (error) {
-      toast.error("Download error. Please try again.", {
-        autoClose: toastTimer,
-      });
-      console.error("Download error:", error);
-    }
-  };
-
   const downloadAllFiles = async (e) => {
+    if (!allFiles.length) {
+      return;
+    }
     e.target.textContent = "Downloading...";
     const zip = new JSZip();
     const folder = zip.folder("files");
 
     try {
-      const filePromises = data.map(async (file) => {
+      const filePromises = allFiles.map(async (file) => {
         try {
-          const downloadUrl = storage.getFileDownload(BUCKET_ID, file.id);
+          const downloadUrl = file.downloadUrl;
 
           if (!downloadUrl) {
             throw new Error(`Failed to fetch file with ID: ${file.id}`);
@@ -222,20 +264,27 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const deleteAllFiles = async () => {
+  const deleteAllFiles = async (e) => {
+    e.target.textContent = "Deleting...";
     try {
-      const deletePromises = data.map(async (file) => {
+      const deletePromises = allFiles.map(async (file) => {
         await storage.deleteFile(BUCKET_ID, file.id);
+        await databases.deleteDocument(
+          DATABASE_ID,
+          COLLECTION_ID_FILES,
+          file.id
+        );
       });
-
       await Promise.all(deletePromises);
 
-      setData([]);
+      setAllFiles([]);
       setStorageOccupied(0);
       toast.success("All files deleted successfully.", {
         autoClose: toastTimer,
       });
+      e.target.textContent = "Delete All Files";
     } catch (error) {
+      e.target.textContent = "Delete All Files";
       toast.error("Error deleting all files. Please try again.", {
         autoClose: toastTimer,
       });
@@ -246,11 +295,11 @@ export const DataProvider = ({ children }) => {
   const getuserdetails = async () => {
     try {
       const user = await account.get();
-      const URL = avatars.getInitials(user.name);
+      const URL = await getProfileImage(user.name);
       setUserDetails({
         name: user.name,
         email: user.email,
-        imageUrl: URL.href,
+        imageUrl: URL,
       });
     } catch (error) {
       toast.error("Error fetching user details.", { autoClose: toastTimer });
@@ -266,9 +315,10 @@ export const DataProvider = ({ children }) => {
         COLLECTION_ID_TEACHERS,
         [Query.equal("urls", id)]
       );
-
+      // console.log(response);
       if (response.total > 0) {
         seturlID(id);
+        setteacherID(response.documents[0].$id);
         toast.update(toastId, {
           render: "ID found.",
           type: "success",
@@ -296,22 +346,23 @@ export const DataProvider = ({ children }) => {
       return false;
     }
   };
-
   return (
     <DataContext.Provider
       value={{
-        data,
+        allFiles,
+        teacherFiles,
         urlID,
         storageData,
         handleFileUpload,
         handleFileDelete,
-        handleFileDownload,
         deleteAllFiles,
         downloadAllFiles,
         getuserdetails,
         userDetails,
         checkIDInDatabase,
         APP_NAME,
+        getProfileImage,
+        getUserID,
       }}
     >
       {children}

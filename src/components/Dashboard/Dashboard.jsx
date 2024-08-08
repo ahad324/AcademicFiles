@@ -18,11 +18,11 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const { handleLogout } = useAuth();
+  const { handleLogout, isAdmin } = useAuth();
 
   const {
     APP_NAME,
-    data,
+    allFiles,
     downloadAllFiles,
     deleteAllFiles,
     getuserdetails,
@@ -85,7 +85,7 @@ const Dashboard = () => {
                           : "hover:bg-[--secondary-color-hover]"
                       }`
                     }
-                    to="files"
+                    to="allfiles"
                   >
                     <AiOutlineFile className="w-4 h-4" />
                     <span className="ml-4">All Files </span>
@@ -131,7 +131,7 @@ const Dashboard = () => {
                     <IoMdCloudDownload className="w-4 h-4" />
                     <span className="ml-4"> Download All Files</span>
                     <span className="absolute bottom-2.1 right-2 w-5 h-5 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-xs">
-                      {data.length}
+                      {allFiles.length}
                     </span>
                   </button>
                 </li>
@@ -143,7 +143,7 @@ const Dashboard = () => {
                     <FaTrashAlt className="w-4 h-4" />
                     <span className="ml-4"> Delete All Files</span>
                     <span className="absolute bottom-2.1 right-2 w-5 h-5 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-xs">
-                      {data.length}
+                      {allFiles.length}
                     </span>
                   </button>
                 </li>

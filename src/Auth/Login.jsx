@@ -16,7 +16,7 @@ const schema = z.object({
 
 const Login = () => {
   const navigate = useNavigate();
-  const { handleLogin, isAuthenticated } = useAuth();
+  const { handleLogin, User } = useAuth();
 
   // Setup react-hook-form with Zod validation
   const {
@@ -36,10 +36,10 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (User) {
       navigate("/dashboard/overview");
     }
-  }, [isAuthenticated, navigate]);
+  }, [User, navigate]);
 
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-[50%] -translate-y-[50%] flex flex-col items-center justify-center h-screen z-[3] w-full">

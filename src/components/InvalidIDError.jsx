@@ -3,11 +3,11 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const InvalidIDError = ({ message = "ID not found" }) => {
-  const { isAuthenticated } = useAuth();
+  const { User } = useAuth();
 
   return (
     <>
-      {isAuthenticated && <Navigate to="/dashboard" />}
+      {User && <Navigate to="/dashboard" />}
       <div>{message}</div>
     </>
   );

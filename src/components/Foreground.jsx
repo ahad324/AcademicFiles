@@ -10,7 +10,7 @@ const Foreground = () => {
   const [loading, setloading] = useState(true);
   const { data } = useData();
 
-  const { isAuthenticated } = useAuth();
+  const { User } = useAuth();
 
   useEffect(() => {
     setloading(false);
@@ -29,7 +29,7 @@ const Foreground = () => {
       ) : (
         <div
           className={`flex justify-center items-center flex-col w-full h-full ${
-            isAuthenticated ? "relative" : "absolute"
+            User ? "relative" : "absolute"
           } top-0`}
         >
           <h2 className="text-3xl text-[--error-color]">No files here.</h2>

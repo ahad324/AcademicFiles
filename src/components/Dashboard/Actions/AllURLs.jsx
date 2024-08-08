@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaCheck } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { FiCopy } from "react-icons/fi";
 import { useAction } from "@contexts/ActionsContext";
-import ProfileBadge from "../../ProfileBadge";
+import ProfileBadge from "@components/ProfileBadge";
+import { useAuth } from "@contexts/AuthContext";
 
 const AllURLs = () => {
   const {
@@ -16,6 +17,7 @@ const AllURLs = () => {
     urlsByTeacher,
   } = useAction();
   const [expandedTeacher, setExpandedTeacher] = useState(null);
+  const { isAdmin } = useAuth();
 
   const handleAccordionClick = async (teacherId) => {
     if (expandedTeacher === teacherId) {
@@ -27,10 +29,10 @@ const AllURLs = () => {
   };
 
   useEffect(() => {
-    listTeachers();
+    isAdmin && listTeachers();
   }, []);
 
-  return (
+  return isAdmin ? (
     <div id="accordion-collapse" data-accordion="collapse">
       {teachers.length > 0 ? (
         teachers.map((teacher) => (
@@ -152,6 +154,8 @@ const AllURLs = () => {
         </div>
       )}
     </div>
+  ) : (
+    <div>asd</div>
   );
 };
 

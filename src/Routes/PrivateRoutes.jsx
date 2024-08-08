@@ -3,16 +3,16 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const PrivateRoutes = () => {
-  const { isAuthenticated, getRole } = useAuth();
+  const { User } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!User) {
       navigate("/login");
     }
-  }, [isAuthenticated, getRole, navigate]);
+  }, [User, navigate]);
 
-  if (!isAuthenticated) {
+  if (!User) {
     return null;
   }
 

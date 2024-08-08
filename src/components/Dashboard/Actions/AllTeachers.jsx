@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useAction } from "@contexts/ActionsContext";
-import ProfileBadge from "../../ProfileBadge";
+import ProfileBadge from "@components/ProfileBadge";
 
 const AllTeachers = () => {
   const { teachers, teacherImages, listTeachers } = useAction();

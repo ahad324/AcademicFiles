@@ -1,11 +1,11 @@
-import React, { useContext, createContext, useState } from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import {
   account,
-  avatars,
   ID,
   databases,
   DATABASE_ID,
   COLLECTION_ID_TEACHERS,
+  COLLECTION_ID_FILES,
   Query,
 } from "@src/AppwriteConfig.js";
 import { toast } from "react-toastify";
@@ -20,21 +20,12 @@ const useAction = () => {
 };
 
 const ActionsProvider = ({ children }) => {
-  const { toastTimer } = useData();
+  const { toastTimer, getProfileImage, handleFileDelete, getUserID } =
+    useData();
   const [teachers, setTeachers] = useState([]);
   const [teacherImages, setTeacherImages] = useState({});
   const [urlsByTeacher, setUrlsByTeacher] = useState({});
   const DomainURL = "https://academicfilerelay.netlify.app/";
-
-  const getProfileImage = async (initials) => {
-    try {
-      const avatarURL = avatars.getInitials(initials);
-      return avatarURL.href;
-    } catch (error) {
-      console.error("Error getting profile image:", error);
-      return "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png";
-    }
-  };
 
   const createTeacher = async (email, password, username) => {
     const toastId = toast.loading("Creating teacher...");
@@ -133,8 +124,7 @@ const ActionsProvider = ({ children }) => {
   const createURL = async (urlID) => {
     const toastId = toast.loading("Creating URL...");
     try {
-      const user = await account.get(); // Get the currently logged-in user's account
-      let teacherID = user.$id;
+      let teacherID = await getUserID();
 
       // Fetch the teacher's document
       let document;
@@ -199,6 +189,17 @@ const ActionsProvider = ({ children }) => {
         COLLECTION_ID_TEACHERS,
         documentID
       );
+      toast.update(toastId, {
+        render: "Deleting Files under that URL...",
+        type: "loading",
+        isLoading: true,
+        autoClose: toastTimer,
+      });
+      const files = await fetchFilesByUrlID(urlID);
+
+      files.map((file) => {
+        handleFileDelete(file.$id);
+      });
 
       const currentURLs = document.urls || [];
       const updatedURLs = currentURLs.filter((url) => url !== urlID);
@@ -216,10 +217,10 @@ const ActionsProvider = ({ children }) => {
         [documentID]: updatedURLs,
       }));
       toast.update(toastId, {
-        render: "",
+        render: "URL deleted successfully.",
         type: "success",
         isLoading: false,
-        autoClose: 1,
+        autoClose: toastTimer,
       });
     } catch (error) {
       console.error("Error deleting URL:", error);
@@ -227,12 +228,38 @@ const ActionsProvider = ({ children }) => {
     }
   };
 
+  const fetchFilesByUrlID = async (urlID) => {
+    const toastId = toast.loading("Fetching Files...");
+    try {
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTION_ID_FILES,
+        [Query.equal("urlId", urlID)]
+      );
+      toast.update(toastId, {
+        render: "Fetched",
+        type: "success",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+      return response.documents;
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Failed to fetch files.please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+      console.error("Error fetching files by urlID:", error);
+      return [];
+    }
+  };
   const contextData = {
     teachers,
     teacherImages,
+    fetchFilesByUrlID,
     createTeacher,
     listTeachers,
-    getProfileImage,
     getURLsByTeacher,
     copyToClipboard,
     deleteURL,

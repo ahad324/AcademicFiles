@@ -11,7 +11,7 @@ const Home = () => {
   const { id } = useParams();
   const { checkIDInDatabase } = useData();
   const [isValidID, setIsValidID] = useState(null);
-  const { isAuthenticated } = useAuth();
+  const { User } = useAuth();
 
   useEffect(() => {
     const verifyID = async () => {
@@ -32,7 +32,7 @@ const Home = () => {
 
   return (
     <>
-      {isAuthenticated && <Navigate to="/dashboard" />}
+      {User && <Navigate to="/dashboard" />}
       <section className="w-full h-full">
         <h1>Recieving Files for ID : {id}</h1>
         <Background />
