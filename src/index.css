@@ -9,18 +9,22 @@
   --secondary-color:rgba(67,56,202,1);
   --error-color: rgb(239 68 68) ;
   --secondary-color-hover:rgb(79,70,229,1);
-  --default-text-color:white;
+  --default-text-color:whitesmoke;
   --light-gray-color:rgb(156,163,175,1);
   --medium-gray-color:rgb(67, 72, 85);
   --dark-gray-color:rgb(31,41,55,1);
+  --author-bg:var(--dark-gray-color);
+  --author-text-color:var(--default-text-color);
 }
 body.dark{
   --bg-color:rgb(31,41,55,1);
-  --text-color:white; 
+  --text-color:whitesmoke; 
   --text-hover-color:black;
   --card-bg:rgb(24,24,27,0.9);
   --eye-bg:rgb(82,82,91,1);
   --sidebar-bg:var(--bg-color);
+  --author-bg:whitesmoke;
+  --author-text-color:black;
 }
 body.light{
   --bg-color:rgb(196 196 203);

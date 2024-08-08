@@ -2,15 +2,8 @@ import React from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { FaUserPlus, FaLink, FaUsers } from "react-icons/fa";
 import "../../styles/NavTabs.css"; // Make sure the path is correct
-import useActiveRoute from "../../Hooks/useActiveRoute";
 
 const Actions = () => {
-  const { isBasePath, isAnyRouteActive } = useActiveRoute("/actions", [
-    "createteacher",
-    "createurl",
-    "allteachers",
-    "allurls",
-  ]);
   return (
     <div className="p-4">
       <nav className="border-b-4 border-[--text-color] p-2 flex flex-col sm:flex-row items-center justify-center">
@@ -70,11 +63,7 @@ const Actions = () => {
         </ul>
       </nav>
       <div className="mt-4">
-        {isBasePath && !isAnyRouteActive ? (
-          <div>Select any option.</div>
-        ) : (
-          <Outlet />
-        )}
+        <Outlet />
       </div>
     </div>
   );

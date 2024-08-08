@@ -3,7 +3,7 @@ import Logo from "../assets/Logo.jpg";
 
 const Author = () => {
   return (
-    <div className="fixed shadow-custom bottom-2 right-2 md:bottom-3 md:right-3 bg-gray-800 text-white text-xs p-2 rounded-lg z-10 flex items-center">
+    <div className="fixed shadow-custom bottom-2 font-semibold right-2 md:bottom-1.5 md:right-1.5 bg-[--author-bg] text-[--author-text-color] text-xs p-2 rounded-lg z-10 flex items-center border-2 border-[--author-text-color] transition-colors duration-300">
       <a
         href="https://ahad324.github.io/AllProjects/"
         target="_blank"

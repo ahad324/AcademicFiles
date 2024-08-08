@@ -31,7 +31,7 @@ const CreateURL = () => {
           <input
             type="text"
             value={urlID}
-            onChange={(e) => setUrlID(e.target.value)}
+            onChange={(e) => setUrlID(e.target.value.replace(/\s/g, ""))}
             placeholder="Enter ID"
             className="p-2.5 border border-[--medium-gray-color] rounded-l-lg w-64"
           />

@@ -2,14 +2,20 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   storage,
   account,
+  databases,
   avatars,
   BUCKET_ID,
   PROJECT_ID,
+  DATABASE_ID,
+  COLLECTION_ID_TEACHERS,
+  COLLECTION_ID_FILES,
   client,
   ID,
+  Query,
 } from "../AppwriteConfig";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { toast } from "react-toastify";
 
 const MAX_FILE_SIZE_MB = 50; // Maximum file size in MB
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024; // Convert MB to bytes
@@ -19,12 +25,10 @@ const DataContext = createContext();
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
+  const toastTimer = 3000;
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [deletingFileId, setDeletingFileId] = useState(null);
+  const [urlID, seturlID] = useState(null);
   const [storageOccupied, setStorageOccupied] = useState(0); // State for storage occupied
-  // const [storageTotal, setStorageTotal] = useState(2048); // State for total storage
   const [storageData, setStorageData] = useState({
     total: 2048,
     occupied: parseFloat(storageOccupied).toFixed(2),
@@ -36,7 +40,6 @@ export const DataProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchFiles = async () => {
-      setLoading(true);
       try {
         const response = await storage.listFiles(BUCKET_ID);
         const filesData = response.files.map((file) => ({
@@ -54,12 +57,24 @@ export const DataProvider = ({ children }) => {
         );
         setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
       } catch (error) {
+        toast.error("Error fetching files.", { autoClose: toastTimer });
         console.error("Error fetching files:", error);
-      } finally {
-        setLoading(false);
       }
     };
-
+    // const example = async () => {
+    //   const response = await databases.createDocument(
+    //     DATABASE_ID,
+    //     COLLECTION_ID_FILES,
+    //     ID.unique(),
+    //     {
+    //       TeacherID: "TeacherID",
+    //       urlId: "urlId",
+    //       File: ["ahad", "gujjar", "132123"],
+    //     }
+    //   );
+    //   console.log(response);
+    // };
+    // example();
     fetchFiles();
 
     // Setting up for Realtime-Updates
@@ -92,23 +107,14 @@ export const DataProvider = ({ children }) => {
 
   const handleFileUpload = async (file) => {
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setError(`File size exceeds ${MAX_FILE_SIZE_MB} MB.`);
-      setTimeout(() => {
-        setError("");
-      }, 3000);
+      toast.error(`File size exceeds ${MAX_FILE_SIZE_MB} MB.`, {
+        autoClose: toastTimer,
+      });
       return false;
     }
 
-    // if (data.some((existingFile) => existingFile.desc === file.name)) {
-    //   setError("File with this name already exists.");
-    //   setTimeout(() => {
-    //     setError("");
-    //   }, 5000);
-    //   return false;
-    // }
-
     if (storageOccupied + file.size / (1024 * 1024) > storageData.total) {
-      setError("Not enough storage left.");
+      toast.error("Not enough storage left.", { autoClose: toastTimer });
       return false;
     }
 
@@ -123,17 +129,18 @@ export const DataProvider = ({ children }) => {
       };
       setData([...data, fileData]);
       setStorageOccupied((prev) => prev + file.size / (1024 * 1024)); // Update storage occupied
-      setError("");
+      toast.success("File uploaded successfully.", { autoClose: toastTimer });
       return true;
     } catch (error) {
-      setError("Error uploading file. Please try again.");
+      toast.error("Error uploading file. Please try again.", {
+        autoClose: toastTimer,
+      });
       console.error("Error uploading file:", error);
       return false;
     }
   };
 
   const handleFileDelete = async (fileId) => {
-    setDeletingFileId(fileId);
     try {
       await storage.deleteFile(BUCKET_ID, fileId);
       setData((prevData) => prevData.filter((item) => item.id !== fileId));
@@ -143,40 +150,42 @@ export const DataProvider = ({ children }) => {
         0
       );
       setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
-      setDeletingFileId(null);
+      toast.success("File deleted successfully.", { autoClose: toastTimer });
     } catch (error) {
+      toast.error("Error deleting file.", { autoClose: toastTimer });
       console.error("Error deleting file:", error);
-    } finally {
-      setDeletingFileId(null);
     }
   };
+
   const handleFileDownload = async (data) => {
     try {
       const result = await storage.getFileDownload(BUCKET_ID, data.id);
-      const downloadUrl = result; // This is the URL to the file
+      const downloadUrl = result;
 
       if (!downloadUrl) throw new Error("Download URL was not retrieved");
 
-      // Create a link element to initiate the download
       const link = document.createElement("a");
       link.href = downloadUrl;
       link.download = data.desc;
       document.body.appendChild(link);
       link.click();
 
-      // Clean up
       link.remove();
+      toast.success("File downloaded successfully.", { autoClose: toastTimer });
     } catch (error) {
+      toast.error("Download error. Please try again.", {
+        autoClose: toastTimer,
+      });
       console.error("Download error:", error);
     }
   };
+
   const downloadAllFiles = async (e) => {
     e.target.textContent = "Downloading...";
     const zip = new JSZip();
     const folder = zip.folder("files");
 
     try {
-      // Fetch and process each file
       const filePromises = data.map(async (file) => {
         try {
           const downloadUrl = storage.getFileDownload(BUCKET_ID, file.id);
@@ -185,7 +194,6 @@ export const DataProvider = ({ children }) => {
             throw new Error(`Failed to fetch file with ID: ${file.id}`);
           }
 
-          // Fetch the file blob
           const response = await fetch(downloadUrl);
           if (!response.ok) throw new Error("Network response was not ok");
 
@@ -198,21 +206,24 @@ export const DataProvider = ({ children }) => {
 
       await Promise.all(filePromises);
 
-      // Generate the ZIP file
       const content = await zip.generateAsync({ type: "blob" });
       saveAs(content, "files.zip");
 
       e.target.textContent = "Download All Files";
+      toast.success("All files downloaded successfully.", {
+        autoClose: toastTimer,
+      });
     } catch (error) {
+      toast.error("Error creating ZIP file. Please try again.", {
+        autoClose: toastTimer,
+      });
       console.error("Error creating ZIP file:", error);
       e.target.textContent = "Download All Files";
     }
   };
 
   const deleteAllFiles = async () => {
-    setLoading(true);
     try {
-      // Iterate over all files and delete them
       const deletePromises = data.map(async (file) => {
         await storage.deleteFile(BUCKET_ID, file.id);
       });
@@ -221,11 +232,14 @@ export const DataProvider = ({ children }) => {
 
       setData([]);
       setStorageOccupied(0);
+      toast.success("All files deleted successfully.", {
+        autoClose: toastTimer,
+      });
     } catch (error) {
+      toast.error("Error deleting all files. Please try again.", {
+        autoClose: toastTimer,
+      });
       console.error("Error deleting all files:", error);
-      setError("Error deleting all files. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -238,34 +252,68 @@ export const DataProvider = ({ children }) => {
         email: user.email,
         imageUrl: URL.href,
       });
-      // console.log(userDetails);
     } catch (error) {
+      toast.error("Error fetching user details.", { autoClose: toastTimer });
       console.error("Error fetching user details:", error);
     }
   };
 
-  const contextData = {
-    APP_NAME,
-    data,
-    loading,
-    error,
-    deletingFileId,
-    handleFileUpload,
-    handleFileDelete,
-    handleFileDownload,
-    downloadAllFiles,
-    deleteAllFiles,
-    storageOccupied,
-    getuserdetails,
-    userDetails,
-    storageData,
-    MAX_FILE_SIZE_MB,
-    MAX_FILE_SIZE_BYTES,
+  const checkIDInDatabase = async (id) => {
+    const toastId = toast.loading("Checking ID...");
+    try {
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTION_ID_TEACHERS,
+        [Query.equal("urls", id)]
+      );
+
+      if (response.total > 0) {
+        seturlID(id);
+        toast.update(toastId, {
+          render: "ID found.",
+          type: "success",
+          isLoading: false,
+          autoClose: toastTimer,
+        });
+        return true;
+      } else {
+        toast.update(toastId, {
+          render: "ID not found.",
+          type: "error",
+          isLoading: false,
+          autoClose: toastTimer,
+        });
+        return false;
+      }
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Error checking ID.",
+        type: "error",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+      console.error("Error checking ID:", error);
+      return false;
+    }
   };
 
   return (
-    <DataContext.Provider value={contextData}>
-      {/* {loading ? <Loader /> : children} */}
+    <DataContext.Provider
+      value={{
+        data,
+        urlID,
+        storageData,
+        handleFileUpload,
+        handleFileDelete,
+        handleFileDownload,
+        deleteAllFiles,
+        downloadAllFiles,
+        getuserdetails,
+        userDetails,
+        checkIDInDatabase,
+        APP_NAME,
+      }}
+    >
       {children}
     </DataContext.Provider>
   );

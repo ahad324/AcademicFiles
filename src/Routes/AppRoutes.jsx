@@ -1,7 +1,9 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Background from "../components/Background";
-import Foreground from "../components/Foreground";
+
+import Home from "../components/Home";
+import InvalidIDError from "../components/InvalidIDError";
+
 import Login from "../Auth/Login";
 import Error from "../components/Error/Error";
 import PrivateRoutes from "./PrivateRoutes";
@@ -21,15 +23,8 @@ import AllURLs from "../components/Dashboard/Actions/AllURLs";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <section className="w-full h-full">
-            <Background />
-            <Foreground />
-          </section>
-        }
-      />
+      <Route path="/" element={<InvalidIDError />} />
+      <Route path="/:id" element={<Home />} />
       <Route element={<PrivateRoutes />}>
         <Route
           path="/dashboard/"

@@ -6,9 +6,10 @@ import {
   databases,
   DATABASE_ID,
   COLLECTION_ID_TEACHERS,
+  Query,
 } from "@src/AppwriteConfig.js";
 import { toast } from "react-toastify";
-import { Query } from "appwrite";
+import { useData } from "./DataContext";
 
 // Create the context
 const ActionContext = createContext();
@@ -19,10 +20,10 @@ const useAction = () => {
 };
 
 const ActionsProvider = ({ children }) => {
+  const { toastTimer } = useData();
   const [teachers, setTeachers] = useState([]);
   const [teacherImages, setTeacherImages] = useState({});
   const [urlsByTeacher, setUrlsByTeacher] = useState({});
-  const toastTimer = 3000;
   const DomainURL = "https://academicfilerelay.netlify.app/";
 
   const getProfileImage = async (initials) => {
