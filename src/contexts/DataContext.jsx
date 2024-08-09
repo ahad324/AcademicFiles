@@ -27,8 +27,7 @@ const DataContext = createContext();
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-  const { User, isAdmin } = useAuth();
-  const toastTimer = 3000;
+  const { User, isAdmin, toastTimer } = useAuth();
   const [allFiles, setAllFiles] = useState([]);
   const [teacherFiles, setteacherFiles] = useState([]);
   const [filesByUrl, setFilesByUrl] = useState({});
@@ -69,7 +68,7 @@ export const DataProvider = ({ children }) => {
     };
 
     const fetchTeacherFiles = async () => {
-      const toastId = toast.loading("Fetching Files...");
+      const toastId = toast.loading("Fetching teacher Files...");
       try {
         // Check if id is passed otherwise get the current user id,
         const ID = await getUserID();
@@ -143,7 +142,8 @@ export const DataProvider = ({ children }) => {
         teacherSubscription();
       }
     };
-  }, [User, isAdmin]);
+  }, []);
+  // [User, isAdmin]
 
   useEffect(() => {
     const percentageUsed =
@@ -358,9 +358,11 @@ export const DataProvider = ({ children }) => {
         email: user.email,
         imageUrl: URL,
       });
+      return user; // Will be used in settings component
     } catch (error) {
       toast.error("Error fetching user details.", { autoClose: toastTimer });
       console.error("Error fetching user details:", error);
+      return;
     }
   };
 

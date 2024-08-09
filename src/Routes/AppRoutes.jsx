@@ -13,6 +13,7 @@ import Dashboard from "../components/Dashboard/Dashboard";
 import Overview from "../components/Dashboard/Overview";
 import AllFiles from "../components/Dashboard/AllFiles";
 import Actions from "../components/Dashboard/Actions";
+import Settings from "../components/Dashboard/Settings";
 // Actions Components
 import { ActionsProvider } from "../contexts/ActionsContext";
 import CreateTeacher from "../components/Dashboard/Actions/CreateTeacher";
@@ -47,6 +48,7 @@ const AppRoutes = () => {
             <Route path="allteachers" element={<AllTeachers />} />
             <Route path="allurls" element={<AllURLs />} />
           </Route>
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
       <Route path="*" element={<Error />} />
