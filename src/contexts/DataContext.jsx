@@ -365,15 +365,22 @@ export const DataProvider = ({ children }) => {
   };
 
   const fetchFilesByUrlID = async (urlID) => {
-    const toastId = toast.loading("Fetching Files...");
+    const toastId = toast.loading("Fetching Files by URL...");
     try {
       const response = await databases.listDocuments(
         DATABASE_ID,
         COLLECTION_ID_FILES,
         [Query.equal("urlId", urlID)]
       );
+      const filesData = response.documents.map((file) => ({
+        id: file.$id,
+        desc: file.File[1],
+        filesize: file.File[2],
+        downloadUrl: file.File[3],
+      }));
+      setFilesByUrl((prev) => ({ ...prev, [urlID]: filesData }));
       toast.update(toastId, {
-        render: "Fetched",
+        render: "Fetched Files by URL",
         type: "success",
         isLoading: false,
         autoClose: toastTimer,
@@ -448,6 +455,7 @@ export const DataProvider = ({ children }) => {
         getProfileImage,
         getUserID,
         fetchFilesByUrlID,
+        filesByUrl,
       }}
     >
       {children}

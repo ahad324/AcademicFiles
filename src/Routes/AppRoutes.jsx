@@ -25,6 +25,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<InvalidIDError />} />
       <Route path="/:id" element={<Home />} />
+      <Route path="/login" element={<Login />} />
       <Route element={<PrivateRoutes />}>
         <Route
           path="/dashboard/"
@@ -48,7 +49,6 @@ const AppRoutes = () => {
           </Route>
         </Route>
       </Route>
-      <Route path="/login" element={<Login />} />
       <Route path="*" element={<Error />} />
     </Routes>
   );

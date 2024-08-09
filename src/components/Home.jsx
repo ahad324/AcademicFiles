@@ -36,7 +36,7 @@ const Home = () => {
       <section className="w-full h-full">
         <h1>Recieving Files for ID : {id}</h1>
         <Background />
-        <Foreground />
+        <Foreground urlID={id.toString()} />
       </section>
     </>
   );

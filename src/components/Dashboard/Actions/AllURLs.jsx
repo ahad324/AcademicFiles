@@ -19,10 +19,9 @@ const AllURLs = () => {
     urlsByTeacher,
     getUserID,
   } = useAction();
-  const { fetchFilesByUrlID } = useData();
+  const { fetchFilesByUrlID, filesByUrl } = useData();
   const [expandedTeacher, setExpandedTeacher] = useState(null);
   const [expandedUrl, setExpandedUrl] = useState(null);
-  const [filesByUrl, setFilesByUrl] = useState({});
   const [ID, setID] = useState(null);
   const { isAdmin } = useAuth();
 
@@ -36,16 +35,7 @@ const AllURLs = () => {
   const handleUrlClick = async (urlID) => {
     setExpandedUrl(expandedUrl === urlID ? null : urlID);
     if (expandedUrl !== urlID) {
-      const response = await fetchFilesByUrlID(urlID);
-      const filesData = response.map((file) => ({
-        id: file.$id,
-        desc: file.File[1],
-        filesize: file.File[2],
-        downloadUrl: file.File[3],
-      }));
-      setFilesByUrl((prev) => ({ ...prev, [urlID]: filesData }));
-    } else {
-      setFilesByUrl((prev) => ({ ...prev, [urlID]: null }));
+      await fetchFilesByUrlID(urlID);
     }
   };
 
