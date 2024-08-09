@@ -26,35 +26,37 @@ const Table = ({ files }) => {
         </thead>
         <tbody>
           {files.length > 0 ? (
-            files.map((file, i) => (
-              <tr key={file.id} className="border-b bg-[--dark-gray-color]">
-                <td
-                  scope="row"
-                  className="px-6 py-4 text-[--default-text-color]  text-center"
-                >
-                  {i + 1}
-                </td>
-                <td className="px-6 py-4 text-center">{file.id}</td>
-                <td className="px-6 py-4 text-center">{file.desc}</td>
-                <td className="px-6 py-4 text-center">{file.filesize}</td>
-                <td className="px-6 py-4 flex items-center justify-evenly ">
-                  <a
-                    href={file.downloadUrl}
-                    download={file.desc}
-                    rel="noopener noreferrer"
-                    className="text-[--accent-color]"
+            files.map((file, i) => {
+              return (
+                <tr key={file.id} className="border-b bg-[--dark-gray-color]">
+                  <td
+                    scope="row"
+                    className="px-6 py-4 text-[--default-text-color]  text-center"
                   >
-                    <IoDownload size="1.5em" title="Download File" />
-                  </a>
-                  <button
-                    onClick={() => handledelete(file.id)}
-                    className="text-[--error-color]"
-                  >
-                    <IoTrash size="1.5em" title="Delete File" />
-                  </button>
-                </td>
-              </tr>
-            ))
+                    {i + 1}
+                  </td>
+                  <td className="px-6 py-4 text-center">{file.id}</td>
+                  <td className="px-6 py-4 text-center">{file.desc}</td>
+                  <td className="px-6 py-4 text-center">{file.filesize}</td>
+                  <td className="px-6 py-4 flex items-center justify-evenly ">
+                    <a
+                      href={file.downloadUrl}
+                      download={file.desc}
+                      rel="noopener noreferrer"
+                      className="text-[--accent-color]"
+                    >
+                      <IoDownload size="1.5em" title="Download File" />
+                    </a>
+                    <button
+                      onClick={() => handledelete(file.id)}
+                      className="text-[--error-color]"
+                    >
+                      <IoTrash size="1.5em" title="Delete File" />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
               <td

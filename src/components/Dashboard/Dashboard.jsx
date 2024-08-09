@@ -19,6 +19,7 @@ import { useAuth } from "../../contexts/AuthContext";
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { handleLogout, isAdmin } = useAuth();
+  const { teacherFiles } = useData();
 
   const {
     APP_NAME,
@@ -131,7 +132,7 @@ const Dashboard = () => {
                     <IoMdCloudDownload className="w-4 h-4" />
                     <span className="ml-4"> Download All Files</span>
                     <span className="absolute bottom-2.1 right-2 w-5 h-5 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-xs">
-                      {allFiles.length}
+                      {isAdmin ? allFiles.length : teacherFiles.length}
                     </span>
                   </button>
                 </li>
@@ -143,7 +144,7 @@ const Dashboard = () => {
                     <FaTrashAlt className="w-4 h-4" />
                     <span className="ml-4"> Delete All Files</span>
                     <span className="absolute bottom-2.1 right-2 w-5 h-5 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-xs">
-                      {allFiles.length}
+                      {isAdmin ? allFiles.length : teacherFiles.length}
                     </span>
                   </button>
                 </li>

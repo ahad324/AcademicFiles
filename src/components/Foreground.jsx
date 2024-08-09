@@ -8,7 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 const Foreground = () => {
   const ref = useRef();
   const [loading, setloading] = useState(true);
-  const { data } = useData();
+  const { allFiles } = useData();
 
   const { User } = useAuth();
 
@@ -24,8 +24,10 @@ const Foreground = () => {
     >
       {loading ? (
         <Loader />
-      ) : data.length > 0 ? (
-        data.map((item) => <Card data={item} reference={ref} key={item.id} />)
+      ) : allFiles.length > 0 ? (
+        allFiles.map((item) => (
+          <Card data={item} reference={ref} key={item.id} />
+        ))
       ) : (
         <div
           className={`flex justify-center items-center flex-col w-full h-full ${

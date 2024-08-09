@@ -20,8 +20,13 @@ const useAction = () => {
 };
 
 const ActionsProvider = ({ children }) => {
-  const { toastTimer, getProfileImage, handleFileDelete, getUserID } =
-    useData();
+  const {
+    toastTimer,
+    getProfileImage,
+    handleFileDelete,
+    getUserID,
+    checkIDInDatabase,
+  } = useData();
   const [teachers, setTeachers] = useState([]);
   const [teacherImages, setTeacherImages] = useState({});
   const [urlsByTeacher, setUrlsByTeacher] = useState({});
@@ -88,13 +93,13 @@ const ActionsProvider = ({ children }) => {
     }
   };
 
-  const getURLsByTeacher = async (teacherId) => {
+  const getURLsByTeacher = async (teacherID) => {
     const toastId = toast.loading("Fecthing URLs...");
     try {
       const response = await databases.listDocuments(
         DATABASE_ID,
         COLLECTION_ID_TEACHERS,
-        [Query.equal("TeacherID", teacherId)]
+        [Query.equal("TeacherID", teacherID)]
       );
       toast.update(toastId, {
         render: "",
@@ -105,7 +110,7 @@ const ActionsProvider = ({ children }) => {
       const document = response.documents[0];
       if (document) {
         const urls = document.urls || [];
-        setUrlsByTeacher((prev) => ({ ...prev, [teacherId]: urls }));
+        setUrlsByTeacher((prev) => ({ ...prev, [teacherID]: urls }));
         return urls;
       }
     } catch (err) {
@@ -124,6 +129,16 @@ const ActionsProvider = ({ children }) => {
   const createURL = async (urlID) => {
     const toastId = toast.loading("Creating URL...");
     try {
+      let alreadyExists = await checkIDInDatabase(urlID);
+      if (alreadyExists) {
+        toast.update(toastId, {
+          render: "ID Already exists enter a uniqu ID.",
+          type: "warning",
+          isLoading: false,
+          autoClose: toastTimer,
+        });
+        return;
+      }
       let teacherID = await getUserID();
 
       // Fetch the teacher's document
@@ -267,6 +282,7 @@ const ActionsProvider = ({ children }) => {
     urlsByTeacher,
     createURL,
     toastTimer,
+    getUserID,
   };
 
   return (

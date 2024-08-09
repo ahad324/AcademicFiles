@@ -16,6 +16,7 @@ import {
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { toast } from "react-toastify";
+import { useAuth } from "./AuthContext";
 
 const MAX_FILE_SIZE_MB = 50; // Maximum file size in MB
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024; // Convert MB to bytes
@@ -26,6 +27,7 @@ const DataContext = createContext();
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
+  const { User, isAdmin } = useAuth();
   const toastTimer = 3000;
   const [allFiles, setAllFiles] = useState([]);
   const [teacherFiles, setteacherFiles] = useState([]);
@@ -59,29 +61,88 @@ export const DataProvider = ({ children }) => {
           0
         );
         setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
-        fetchTeacherFiles();
       } catch (error) {
         toast.error("Error fetching files.", { autoClose: toastTimer });
         console.error("Error fetching files:", error);
       }
     };
-    fetchFiles();
 
-    // Setting up for Realtime-Updates
-    const unsubscribe = client.subscribe("files", (response) => {
-      if (response.events.includes(`buckets.${BUCKET_ID}.files.*.create`)) {
-        fetchFiles(); // Refresh file list on new upload
-      } else if (
+    const fetchTeacherFiles = async () => {
+      const toastId = toast.loading("Fetching Files...");
+      try {
+        // Check if id is passed otherwise get the current user id,
+        const ID = await getUserID();
+
+        const response = await databases.listDocuments(
+          DATABASE_ID,
+          COLLECTION_ID_FILES,
+          [Query.equal("TeacherID", ID)]
+        );
+        const filesData = response.documents.map((file) => ({
+          id: file.$id,
+          desc: file.File[1],
+          filesize: file.File[2],
+          downloadUrl: file.File[3],
+        }));
+        setteacherFiles(filesData);
+
+        toast.update(toastId, {
+          render: "",
+          type: "success",
+          isLoading: false,
+          autoClose: toastTimer,
+        });
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Failed to fetch files.Please try again.",
+          type: "error",
+          isLoading: false,
+          autoClose: toastTimer,
+        });
+        console.error("Error fetching files by for teacher:", error);
+      }
+    };
+    // Fetch initial files
+    fetchFiles();
+    if (User) fetchTeacherFiles();
+
+    // Set up real-time updates for all files
+    const fileSubscription = client.subscribe("files", (response) => {
+      if (
+        response.events.includes(`buckets.${BUCKET_ID}.files.*.create`) ||
         response.events.includes(`buckets.${BUCKET_ID}.files.*.delete`)
       ) {
-        fetchFiles();
+        fetchFiles(); // Refresh file list on new upload or delete
       }
     });
 
+    // Set up real-time updates for teacher files
+    let teacherSubscription;
+    if (User) {
+      teacherSubscription = client.subscribe(
+        `databases.${DATABASE_ID}.collections.${COLLECTION_ID_FILES}.documents`,
+        (response) => {
+          if (
+            response.events.includes(
+              "databases.*.collections.*.documents.*.create"
+            ) ||
+            response.events.includes(
+              "databases.*.collections.*.documents.*.delete"
+            )
+          ) {
+            fetchTeacherFiles();
+          }
+        }
+      );
+    }
+
     return () => {
-      unsubscribe();
+      fileSubscription();
+      if (teacherSubscription) {
+        teacherSubscription();
+      }
     };
-  }, []);
+  }, [User, isAdmin]);
 
   useEffect(() => {
     const percentageUsed =
@@ -117,41 +178,6 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const fetchTeacherFiles = async () => {
-    const toastId = toast.loading("Fetching Files...");
-    try {
-      // Check if id is passed otherwise get the current user id,
-      const ID = await getUserID();
-
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTION_ID_FILES,
-        [Query.equal("TeacherID", ID)]
-      );
-
-      const filesData = response.documents.map((file) => ({
-        id: file.$id,
-        desc: file.File[1],
-        filesize: file.File[2],
-        downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${file.$id}/download?project=${PROJECT_ID}`,
-      }));
-      setteacherFiles(filesData);
-      toast.update(toastId, {
-        render: "",
-        type: "success",
-        isLoading: false,
-        autoClose: toastTimer,
-      });
-    } catch (error) {
-      toast.update(toastId, {
-        render: "Failed to fetch files.Please try again.",
-        type: "error",
-        isLoading: false,
-        autoClose: toastTimer,
-      });
-      console.error("Error fetching files by for teacher:", error);
-    }
-  };
   const handleFileUpload = async (file) => {
     if (file.size > MAX_FILE_SIZE_BYTES) {
       toast.error(`File size exceeds ${MAX_FILE_SIZE_MB} MB.`, {
@@ -179,7 +205,12 @@ export const DataProvider = ({ children }) => {
         {
           TeacherID: teacherID,
           urlId: urlID,
-          File: [fileData.id, fileData.desc, fileData.filesize],
+          File: [
+            fileData.id,
+            fileData.desc,
+            fileData.filesize,
+            fileData.downloadUrl,
+          ],
         }
       );
       setAllFiles([...allFiles, fileData]);
@@ -196,6 +227,7 @@ export const DataProvider = ({ children }) => {
   };
 
   const handleFileDelete = async (fileId) => {
+    let toastId = toast.loading(`Deleting file...`);
     try {
       const res = await storage.deleteFile(BUCKET_ID, fileId);
       const response = await databases.deleteDocument(
@@ -203,24 +235,43 @@ export const DataProvider = ({ children }) => {
         COLLECTION_ID_FILES,
         fileId
       );
+
+      // Update the local state for allFiles
       setAllFiles((prevFiles) =>
         prevFiles.filter((item) => item.id !== fileId)
       );
+
+      // Update the teacherFiles state if it's based on allFiles
+      setteacherFiles((prevFiles) =>
+        prevFiles.filter((item) => item.id !== fileId)
+      );
+
       const updatedFiles = allFiles.filter((item) => item.id !== fileId);
       const totalSize = updatedFiles.reduce(
         (acc, file) => acc + file.filesize,
         0
       );
       setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
-      toast.success("File deleted successfully.", { autoClose: toastTimer });
+      toast.update(toastId, {
+        render: "File deleted successfully.",
+        type: "success",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
     } catch (error) {
-      toast.error("Error deleting file.", { autoClose: toastTimer });
+      toast.update(toastId, {
+        render: "Failed to delete file.Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
       console.error("Error deleting file:", error);
     }
   };
 
   const downloadAllFiles = async (e) => {
-    if (!allFiles.length) {
+    const Files = isAdmin ? allFiles : teacherFiles;
+    if (!Files.length) {
       return;
     }
     e.target.textContent = "Downloading...";
@@ -228,7 +279,7 @@ export const DataProvider = ({ children }) => {
     const folder = zip.folder("files");
 
     try {
-      const filePromises = allFiles.map(async (file) => {
+      const filePromises = Files.map(async (file) => {
         try {
           const downloadUrl = file.downloadUrl;
 
@@ -265,30 +316,35 @@ export const DataProvider = ({ children }) => {
   };
 
   const deleteAllFiles = async (e) => {
+    const Files = isAdmin ? allFiles : teacherFiles;
+    if (!Files.length) {
+      return;
+    }
     e.target.textContent = "Deleting...";
     try {
-      const deletePromises = allFiles.map(async (file) => {
-        await storage.deleteFile(BUCKET_ID, file.id);
-        await databases.deleteDocument(
-          DATABASE_ID,
-          COLLECTION_ID_FILES,
-          file.id
-        );
+      const deletePromises = Files.map(async (file) => {
+        await handleFileDelete(file.id);
       });
+
       await Promise.all(deletePromises);
 
-      setAllFiles([]);
-      setStorageOccupied(0);
+      if (isAdmin) {
+        setAllFiles([]);
+        setStorageOccupied(0);
+      } else {
+        setteacherFiles([]);
+      }
+
       toast.success("All files deleted successfully.", {
         autoClose: toastTimer,
       });
-      e.target.textContent = "Delete All Files";
     } catch (error) {
-      e.target.textContent = "Delete All Files";
       toast.error("Error deleting all files. Please try again.", {
         autoClose: toastTimer,
       });
       console.error("Error deleting all files:", error);
+    } finally {
+      e.target.textContent = "Delete All Files";
     }
   };
 
