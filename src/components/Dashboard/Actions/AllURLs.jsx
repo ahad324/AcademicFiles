@@ -5,6 +5,7 @@ import { useAction } from "@contexts/ActionsContext";
 import ProfileBadge from "@components/ProfileBadge";
 import { useAuth } from "@contexts/AuthContext";
 import Table from "../Table";
+import { useData } from "../../../contexts/DataContext";
 
 const AllURLs = () => {
   const {
@@ -16,9 +17,9 @@ const AllURLs = () => {
     copyToClipboard,
     listTeachers,
     urlsByTeacher,
-    fetchFilesByUrlID,
     getUserID,
   } = useAction();
+  const { fetchFilesByUrlID } = useData();
   const [expandedTeacher, setExpandedTeacher] = useState(null);
   const [expandedUrl, setExpandedUrl] = useState(null);
   const [filesByUrl, setFilesByUrl] = useState({});

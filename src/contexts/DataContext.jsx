@@ -31,6 +31,7 @@ export const DataProvider = ({ children }) => {
   const toastTimer = 3000;
   const [allFiles, setAllFiles] = useState([]);
   const [teacherFiles, setteacherFiles] = useState([]);
+  const [filesByUrl, setFilesByUrl] = useState({});
   const [urlID, seturlID] = useState(null);
   const [teacherID, setteacherID] = useState(null);
   const [storageOccupied, setStorageOccupied] = useState(0); // State for storage occupied
@@ -363,6 +364,33 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  const fetchFilesByUrlID = async (urlID) => {
+    const toastId = toast.loading("Fetching Files...");
+    try {
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTION_ID_FILES,
+        [Query.equal("urlId", urlID)]
+      );
+      toast.update(toastId, {
+        render: "Fetched",
+        type: "success",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+      return response.documents;
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Failed to fetch files.please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+      console.error("Error fetching files by urlID:", error);
+      return [];
+    }
+  };
+
   const checkIDInDatabase = async (id) => {
     const toastId = toast.loading("Checking ID...");
     try {
@@ -419,6 +447,7 @@ export const DataProvider = ({ children }) => {
         APP_NAME,
         getProfileImage,
         getUserID,
+        fetchFilesByUrlID,
       }}
     >
       {children}

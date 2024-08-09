@@ -1,11 +1,10 @@
-import React, { useContext, createContext, useState, useEffect } from "react";
+import React, { useContext, createContext, useState } from "react";
 import {
   account,
   ID,
   databases,
   DATABASE_ID,
   COLLECTION_ID_TEACHERS,
-  COLLECTION_ID_FILES,
   Query,
 } from "@src/AppwriteConfig.js";
 import { toast } from "react-toastify";
@@ -26,6 +25,7 @@ const ActionsProvider = ({ children }) => {
     handleFileDelete,
     getUserID,
     checkIDInDatabase,
+    fetchFilesByUrlID,
   } = useData();
   const [teachers, setTeachers] = useState([]);
   const [teacherImages, setTeacherImages] = useState({});
@@ -243,36 +243,9 @@ const ActionsProvider = ({ children }) => {
     }
   };
 
-  const fetchFilesByUrlID = async (urlID) => {
-    const toastId = toast.loading("Fetching Files...");
-    try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTION_ID_FILES,
-        [Query.equal("urlId", urlID)]
-      );
-      toast.update(toastId, {
-        render: "Fetched",
-        type: "success",
-        isLoading: false,
-        autoClose: toastTimer,
-      });
-      return response.documents;
-    } catch (error) {
-      toast.update(toastId, {
-        render: "Failed to fetch files.please try again.",
-        type: "error",
-        isLoading: false,
-        autoClose: toastTimer,
-      });
-      console.error("Error fetching files by urlID:", error);
-      return [];
-    }
-  };
   const contextData = {
     teachers,
     teacherImages,
-    fetchFilesByUrlID,
     createTeacher,
     listTeachers,
     getURLsByTeacher,
