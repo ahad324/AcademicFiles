@@ -3,7 +3,7 @@ import Logo from "../assets/Logo.jpg";
 
 const Author = () => {
   return (
-    <div className="fixed bottom-2 right-2 md:bottom-1.5 md:right-1.5 z-10">
+    <div className="fixed bottom-1.5 right-1.5 z-10">
       <a
         href="https://ahad324.github.io/AllProjects/"
         target="_blank"

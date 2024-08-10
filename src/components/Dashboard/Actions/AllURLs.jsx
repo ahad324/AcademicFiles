@@ -27,6 +27,7 @@ const AllURLs = () => {
 
   const handleAccordionClick = async (teacherId) => {
     setExpandedTeacher(expandedTeacher === teacherId ? null : teacherId);
+    setExpandedUrl(expandedTeacher === teacherId && null);
     if (expandedTeacher !== teacherId) {
       await getURLsByTeacher(teacherId);
     }
