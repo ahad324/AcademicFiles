@@ -17,7 +17,7 @@ const Card = ({ data, reference }) => {
       whileDrag={{ scale: 1.1, cursor: "grabbing" }}
       dragMomentum={true}
       dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-      className="card shadow-custom relative flex-shrink-0 w-60 h-72 rounded-[45px] bg-[--card-bg] text-[--text-color] px-8 py-10 overflow-hidden backdrop-blur-md"
+      className="card"
     >
       {loading ? (
         <Loader />
