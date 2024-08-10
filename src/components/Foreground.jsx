@@ -8,17 +8,12 @@ import { useAuth } from "../contexts/AuthContext";
 const Foreground = ({ urlID }) => {
   const ref = useRef();
   const [loading, setLoading] = useState(true);
-  const { filesByUrl, fetchFilesByUrlID } = useData();
+  const { filesByUrl } = useData();
   const { User } = useAuth();
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchFilesByUrlID(urlID);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [urlID, fetchFilesByUrlID]);
+    setLoading(false);
+  }, [urlID, filesByUrl]);
 
   const files = filesByUrl[urlID] || [];
 

@@ -33,7 +33,15 @@ const AppRoutes = () => {
           element={<Navigate to="/dashboard/overview" />}
         />
         <Route path="/dashboard/" element={<Dashboard />}>
-          <Route path="overview" element={<Overview />} />
+          <Route
+            path="overview"
+            element={
+              <ActionsProvider>
+                {" "}
+                <Overview />
+              </ActionsProvider>
+            }
+          />
           <Route path="allfiles" element={<AllFiles />} />
           <Route
             path="actions/"

@@ -1,15 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAction } from "@contexts/ActionsContext";
 import ProfileBadge from "@components/ProfileBadge";
 
 const AllTeachers = () => {
-  const { teachers, teacherImages, listTeachers } = useAction();
+  const { teachers, teacherImages } = useAction();
 
   const headers = ["Sr No.", "ID", "Teacher", "Password"];
-
-  useEffect(() => {
-    listTeachers();
-  }, []);
 
   return (
     <div className="relative overflow-x-auto shadow-md rounded-lg border border-[--text-color]">

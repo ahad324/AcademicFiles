@@ -67,84 +67,72 @@ export const DataProvider = ({ children }) => {
       console.error("Error fetching files by URL ID:", error);
     }
   };
+  const fetchAllFiles = async () => {
+    try {
+      const response = await storage.listFiles(BUCKET_ID);
+      const filesData = response.files.map((file) => ({
+        id: file.$id,
+        desc: file.name,
+        filesize: `${(file.sizeOriginal / 1024).toFixed(2)} KB`,
+        downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${file.$id}/download?project=${PROJECT_ID}`,
+      }));
+      setAllFiles(filesData);
 
+      // Calculate storage usage
+      const totalSize = response.files.reduce(
+        (acc, file) => acc + file.sizeOriginal,
+        0
+      );
+      setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
+    } catch (error) {
+      toast.error("Error fetching files.", { autoClose: toastTimer });
+      console.error("Error fetching files:", error);
+    }
+  };
+
+  const fetchTeacherFiles = async () => {
+    try {
+      // Check if id is passed otherwise get the current user id,
+      const ID = await getUserID();
+
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTION_ID_FILES,
+        [Query.equal("TeacherID", ID)]
+      );
+      const filesData = response.documents.map((file) => ({
+        id: file.$id,
+        desc: file.File[1],
+        filesize: file.File[2],
+        downloadUrl: file.File[3],
+      }));
+      setteacherFiles(filesData);
+    } catch (error) {
+      console.error("Error fetching files by for teacher:", error);
+    }
+  };
   useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const response = await storage.listFiles(BUCKET_ID);
-        const filesData = response.files.map((file) => ({
-          id: file.$id,
-          desc: file.name,
-          filesize: `${(file.sizeOriginal / 1024).toFixed(2)} KB`,
-          downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${file.$id}/download?project=${PROJECT_ID}`,
-        }));
-        setAllFiles(filesData);
-
-        // Calculate storage usage
-        const totalSize = response.files.reduce(
-          (acc, file) => acc + file.sizeOriginal,
-          0
-        );
-        setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
-      } catch (error) {
-        toast.error("Error fetching files.", { autoClose: toastTimer });
-        console.error("Error fetching files:", error);
-      }
-    };
-
-    const fetchTeacherFiles = async () => {
-      const toastId = toast.loading("Fetching teacher Files...");
-      try {
-        // Check if id is passed otherwise get the current user id,
-        const ID = await getUserID();
-
-        const response = await databases.listDocuments(
-          DATABASE_ID,
-          COLLECTION_ID_FILES,
-          [Query.equal("TeacherID", ID)]
-        );
-        const filesData = response.documents.map((file) => ({
-          id: file.$id,
-          desc: file.File[1],
-          filesize: file.File[2],
-          downloadUrl: file.File[3],
-        }));
-        setteacherFiles(filesData);
-
-        toast.update(toastId, {
-          render: "",
-          type: "success",
-          isLoading: false,
-          autoClose: toastTimer,
-        });
-      } catch (error) {
-        toast.update(toastId, {
-          render: "Failed to fetch files.Please try again.",
-          type: "error",
-          isLoading: false,
-          autoClose: toastTimer,
-        });
-        console.error("Error fetching files by for teacher:", error);
-      }
-    };
-    // Fetch initial files
-    fetchFiles();
-    if (User) fetchTeacherFiles();
+    if (User) {
+      fetchAllFiles();
+      fetchTeacherFiles();
+    } else if (urlID) {
+      fetchFilesByUrlID(urlID);
+    }
 
     // Set up real-time updates for all files
-    const fileSubscription = client.subscribe("files", (response) => {
+    const allFilesSubscription = client.subscribe("files", (response) => {
       if (
         response.events.includes(`buckets.${BUCKET_ID}.files.*.create`) ||
         response.events.includes(`buckets.${BUCKET_ID}.files.*.delete`)
       ) {
-        fetchFiles(); // Refresh file list on new upload or delete
+        fetchAllFiles(); // Refresh file list on new upload or delete
       }
     });
 
     // Set up real-time updates for teacher files
-    let teacherSubscription;
+    let teacherFilesSubscription;
     if (User) {
-      teacherSubscription = client.subscribe(
+      teacherFilesSubscription = client.subscribe(
         `databases.${DATABASE_ID}.collections.${COLLECTION_ID_FILES}.documents`,
         (response) => {
           if (
@@ -182,12 +170,12 @@ export const DataProvider = ({ children }) => {
     }
 
     return () => {
-      fileSubscription();
+      allFilesSubscription();
       if (urlFilesSubscription) {
-        fetchFilesByUrlID(urlID);
+        urlFilesSubscription();
       }
-      if (teacherSubscription) {
-        teacherSubscription();
+      if (teacherFilesSubscription) {
+        teacherFilesSubscription();
       }
     };
   }, [urlID]);
@@ -228,6 +216,7 @@ export const DataProvider = ({ children }) => {
   };
 
   const handleFileUpload = async (file) => {
+    if (!(await checkIDInDatabase(urlID))) return;
     if (file.size > MAX_FILE_SIZE_BYTES) {
       toast.error(`File size exceeds ${MAX_FILE_SIZE_MB} MB.`, {
         autoClose: toastTimer,
@@ -479,6 +468,7 @@ export const DataProvider = ({ children }) => {
         fetchFilesByUrlID,
         filesByUrl,
         MAX_FILE_SIZE_MB,
+        setFilesByUrl,
       }}
     >
       {children}

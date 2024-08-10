@@ -10,12 +10,10 @@ import { useData } from "../../../contexts/DataContext";
 const AllURLs = () => {
   const {
     teachers,
-    getURLsByTeacher,
     deleteURL,
     teacherImages,
     DomainURL,
     copyToClipboard,
-    listTeachers,
     urlsByTeacher,
     getUserID,
   } = useAction();
@@ -28,9 +26,6 @@ const AllURLs = () => {
   const handleAccordionClick = async (teacherId) => {
     setExpandedTeacher(expandedTeacher === teacherId ? null : teacherId);
     setExpandedUrl(expandedTeacher === teacherId && null);
-    if (expandedTeacher !== teacherId) {
-      await getURLsByTeacher(teacherId);
-    }
   };
 
   const handleUrlClick = async (urlID) => {
@@ -43,13 +38,9 @@ const AllURLs = () => {
   const fetchUserData = async () => {
     const id = await getUserID();
     setID(id);
-    await getURLsByTeacher(id);
   };
 
   useEffect(() => {
-    // if (isAdmin) {
-    listTeachers();
-    // }
     fetchUserData();
   }, []);
 

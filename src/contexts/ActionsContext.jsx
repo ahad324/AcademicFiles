@@ -1,5 +1,6 @@
-import React, { useContext, createContext, useState } from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import {
+  client,
   account,
   ID,
   databases,
@@ -25,12 +26,70 @@ const ActionsProvider = ({ children }) => {
     handleFileDelete,
     getUserID,
     checkIDInDatabase,
-    fetchFilesByUrlID,
     DomainURL,
+    setFilesByUrl,
+    filesByUrl,
   } = useData();
   const [teachers, setTeachers] = useState([]);
   const [teacherImages, setTeacherImages] = useState({});
   const [urlsByTeacher, setUrlsByTeacher] = useState({});
+
+  const fetchURLS = async () => {
+    try {
+      const res = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTION_ID_TEACHERS
+      );
+      const teacherList = res.documents;
+
+      // Set initial URLs by teacher
+      const urlsMap = {};
+      const images = {};
+      teacherList.forEach((teacher) => {
+        urlsMap[teacher.TeacherID] = teacher.urls || [];
+        // Fetch and set images
+        getProfileImage(teacher.username).then((imageUrl) => {
+          images[teacher.TeacherID] = imageUrl;
+          setTeacherImages(images);
+        });
+      });
+      setTeachers(teacherList);
+      setUrlsByTeacher(urlsMap);
+    } catch (error) {
+      console.error("Error fetching initial URLs:", error);
+      toast.error("Failed to fetch initial URLs. Please try again.", {
+        autoClose: toastTimer,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchURLS();
+
+    // Real-time subscription
+    const urlsSubscription = client.subscribe(
+      `databases.${DATABASE_ID}.collections.${COLLECTION_ID_TEACHERS}.documents`,
+      (response) => {
+        if (
+          response.events.includes(
+            "databases.*.collections.*.documents.*.create"
+          ) ||
+          response.events.includes(
+            "databases.*.collections.*.documents.*.delete"
+          ) ||
+          response.events.includes(
+            "databases.*.collections.*.documents.*.update"
+          )
+        ) {
+          fetchURLS(); // Fetch updated URLs when changes occur
+        }
+      }
+    );
+
+    return () => {
+      urlsSubscription(); // Unsubscribe when the component unmounts
+    };
+  }, []);
 
   const createTeacher = async (email, password, username) => {
     const toastId = toast.loading("Creating teacher...");
@@ -57,66 +116,6 @@ const ActionsProvider = ({ children }) => {
         isLoading: false,
         autoClose: toastTimer,
       });
-    }
-  };
-
-  const listTeachers = async () => {
-    const toastId = toast.loading("Fecthing teachers...");
-    try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTION_ID_TEACHERS
-      );
-      const teacherList = response.documents;
-      setTeachers(teacherList);
-
-      // Fetch and set images
-      const images = {};
-      for (const teacher of teacherList) {
-        const imageUrl = await getProfileImage(teacher.username);
-        images[teacher.TeacherID] = imageUrl;
-      }
-      setTeacherImages(images);
-      toast.update(toastId, {
-        render: "",
-        type: "success",
-        isLoading: false,
-        autoClose: 1,
-      });
-      return teacherList;
-    } catch (error) {
-      console.error("Error listing teachers:", error);
-      toast.error("Failed to list teachers. Please try again.", {
-        autoClose: toastTimer,
-      });
-      return [];
-    }
-  };
-
-  const getURLsByTeacher = async (teacherID) => {
-    const toastId = toast.loading("Fecthing URLs...");
-    try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTION_ID_TEACHERS,
-        [Query.equal("TeacherID", teacherID)]
-      );
-      toast.update(toastId, {
-        render: "",
-        type: "success",
-        isLoading: false,
-        autoClose: 1,
-      });
-      const document = response.documents[0];
-      if (document) {
-        const urls = document.urls || [];
-        setUrlsByTeacher((prev) => ({ ...prev, [teacherID]: urls }));
-        return urls;
-      }
-    } catch (err) {
-      console.error("Error fetching URLs by teacher:", err);
-      toast.error("Failed to fetch URLs. Please try again.");
-      return [];
     }
   };
 
@@ -211,10 +210,21 @@ const ActionsProvider = ({ children }) => {
         autoClose: toastTimer,
       });
 
-      const files = await fetchFilesByUrlID(urlID);
+      const files = filesByUrl[urlID] || [];
+      console.log(filesByUrl[urlID]);
 
-      files.map((file) => {
-        handleFileDelete(file.$id);
+      // Delete each file under the URL
+      await Promise.all(
+        files.map(async (file) => {
+          await handleFileDelete(file.id);
+        })
+      );
+
+      // Update filesByUrl state after deletion
+      setFilesByUrl((prev) => {
+        const updatedFiles = { ...prev };
+        delete updatedFiles[urlID]; // Remove the deleted URL and its files
+        return updatedFiles;
       });
 
       const currentURLs = document.urls || [];
@@ -240,7 +250,12 @@ const ActionsProvider = ({ children }) => {
       });
     } catch (error) {
       console.error("Error deleting URL:", error);
-      toast.error("Failed to delete URL. Please try again.");
+      toast.update(toastId, {
+        render: "Failed to delete URL. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
     }
   };
 
@@ -248,8 +263,6 @@ const ActionsProvider = ({ children }) => {
     teachers,
     teacherImages,
     createTeacher,
-    listTeachers,
-    getURLsByTeacher,
     copyToClipboard,
     deleteURL,
     DomainURL,

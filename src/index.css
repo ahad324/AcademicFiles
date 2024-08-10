@@ -48,6 +48,7 @@ body{
 }
 .card{
   cursor: grab;
+  @apply shadow-custom relative flex-shrink-0 w-60 h-72 rounded-[45px] bg-[--card-bg] text-[--text-color] px-8 py-10 overflow-hidden backdrop-blur-md;
 }
 
 /* General progress bar styling */
