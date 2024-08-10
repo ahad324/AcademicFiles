@@ -2,12 +2,12 @@ import React from "react";
 import { IoTrash, IoDownload } from "react-icons/io5";
 import { useData } from "@contexts/DataContext";
 
-const Table = ({ files }) => {
+const Table = ({ files, urlId }) => {
   const { handleFileDelete } = useData();
   const headers = ["Sr No.", "ID", "File Name", "File Size", "Actions"];
 
-  const handledelete = (fileid) => {
-    handleFileDelete(fileid);
+  const handledelete = (fileid, urlId) => {
+    handleFileDelete(fileid, urlId);
   };
   return (
     <div className="relative overflow-x-auto shadow-md rounded-lg border border-[--text-color]">
@@ -48,7 +48,7 @@ const Table = ({ files }) => {
                       <IoDownload size="1.5em" title="Download File" />
                     </a>
                     <button
-                      onClick={() => handledelete(file.id)}
+                      onClick={() => handledelete(file.id, urlId || null)}
                       className="text-[--error-color]"
                     >
                       <IoTrash size="1.5em" title="Delete File" />

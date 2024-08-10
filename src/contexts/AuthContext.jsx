@@ -8,12 +8,18 @@ import {
 import Loader from "../components/Loader";
 import { toast } from "react-toastify";
 
+const MAX_FILE_SIZE_MB = 50; // Maximum file size in MB
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024; // Convert MB to bytes
+const TOTAL_STORAGE = 2048; // In MBs
+
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const toastTimer = 3000;
+  const APP_NAME = "AcademicFileRelay";
+  const DomainURL = "https://academicfilerelay.netlify.app/";
   const [User, setUser] = useState(false);
   const [isAdmin, setisAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,7 +51,6 @@ export const AuthProvider = ({ children }) => {
         autoClose: toastTimer,
       });
     } catch (error) {
-      console.log(error);
       toast.update(toastId, {
         render: "Invalid Credentials.",
         type: "error",
@@ -60,7 +65,6 @@ export const AuthProvider = ({ children }) => {
       setUser(false);
       toast.info("Logged out successfully!", { autoClose: toastTimer });
     } catch (error) {
-      console.error("Logout Error:", error);
       toast.error("Failed to log out!", { autoClose: toastTimer });
     }
   };
@@ -70,9 +74,7 @@ export const AuthProvider = ({ children }) => {
       const result = await account.getPrefs();
       setisAdmin(Object.keys(result).length === 1);
     } catch (error) {
-      console.error("Failed to fetch Role:", error);
       toast.error("Failed to fetch role!", { autoClose: toastTimer });
-      return null;
     }
   };
 
@@ -83,27 +85,21 @@ export const AuthProvider = ({ children }) => {
         COLLECTION_ID_TEACHERS,
         documentId
       );
-      let pass = result.password;
-      return pass;
+      return result.password;
     } catch (error) {
       console.error("failed to get Password");
-      return;
     }
   };
 
   const updatePassword = async (documentId, password) => {
     const toastId = toast.loading("Updating password...");
     try {
-      const result = await account.updatePassword(
-        password,
-        await getUserPassword(documentId)
-      );
-
-      const res = await databases.updateDocument(
+      await account.updatePassword(password, await getUserPassword(documentId));
+      await databases.updateDocument(
         DATABASE_ID,
         COLLECTION_ID_TEACHERS,
         documentId,
-        { password: password }
+        { password }
       );
       toast.update(toastId, {
         render: "Password updated successfully!",
@@ -112,7 +108,6 @@ export const AuthProvider = ({ children }) => {
         autoClose: toastTimer,
       });
     } catch (error) {
-      console.error("Failed to update password:", error);
       toast.update(toastId, {
         render: "Failed to update password!",
         type: "error",
@@ -129,7 +124,7 @@ export const AuthProvider = ({ children }) => {
         DATABASE_ID,
         COLLECTION_ID_TEACHERS,
         documentId,
-        { email: email }
+        { email }
       );
       toast.update(toastId, {
         render: "Email updated successfully!",
@@ -138,7 +133,6 @@ export const AuthProvider = ({ children }) => {
         autoClose: toastTimer,
       });
     } catch (error) {
-      console.error("Failed to update email:", error);
       toast.update(toastId, {
         render: "Failed to update email!",
         type: "error",
@@ -147,15 +141,15 @@ export const AuthProvider = ({ children }) => {
       });
     }
   };
-  const updateUsername = async (documentId, name) => {
+  const updateUsername = async (documentId, username) => {
     const toastId = toast.loading("Updating username...");
     try {
-      await account.updateName(name);
+      await account.updateName(username);
       await databases.updateDocument(
         DATABASE_ID,
         COLLECTION_ID_TEACHERS,
         documentId,
-        { username: name }
+        { username }
       );
       toast.update(toastId, {
         render: "Username updated successfully!",
@@ -164,7 +158,6 @@ export const AuthProvider = ({ children }) => {
         autoClose: toastTimer,
       });
     } catch (error) {
-      console.error("Failed to update username:", error);
       toast.update(toastId, {
         render: "Failed to update username!",
         type: "error",
@@ -176,7 +169,7 @@ export const AuthProvider = ({ children }) => {
   const blockAccount = async () => {
     const toastId = toast.loading("Blocking account...");
     try {
-      const result = await account.updateStatus();
+      await account.updateStatus();
       toast.update(toastId, {
         render: "Account blocked successfully!",
         type: "success",
@@ -184,7 +177,6 @@ export const AuthProvider = ({ children }) => {
         autoClose: toastTimer,
       });
     } catch (error) {
-      console.error("Failed to block account:", error);
       toast.update(toastId, {
         render: "Failed to block account!",
         type: "error",
@@ -195,7 +187,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const contextValue = {
+    MAX_FILE_SIZE_MB,
+    MAX_FILE_SIZE_BYTES,
+    TOTAL_STORAGE,
     toastTimer,
+    APP_NAME,
+    DomainURL,
     User,
     handleLogin,
     handleLogout,

@@ -46,9 +46,9 @@ const AllURLs = () => {
   };
 
   useEffect(() => {
-    if (isAdmin) {
-      listTeachers();
-    }
+    // if (isAdmin) {
+    listTeachers();
+    // }
     fetchUserData();
   }, []);
 
@@ -147,7 +147,7 @@ const AllURLs = () => {
             </tbody>
           </table>
           {expandedUrl && filesByUrl[expandedUrl] && (
-            <Table files={filesByUrl[expandedUrl]} />
+            <Table files={filesByUrl[expandedUrl]} urlId={expandedUrl} />
           )}
         </div>
       </div>
@@ -179,7 +179,7 @@ const AllURLs = () => {
           </div>
         </div>
         {expandedUrl === urlID && filesByUrl[urlID] && (
-          <Table files={filesByUrl[urlID]} />
+          <Table files={filesByUrl[urlID]} urlId={urlID} />
         )}
       </div>
     ));

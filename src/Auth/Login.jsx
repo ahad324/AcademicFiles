@@ -16,7 +16,7 @@ const schema = z.object({
 
 const Login = () => {
   const navigate = useNavigate();
-  const { handleLogin, User } = useAuth();
+  const { handleLogin, User, APP_NAME } = useAuth();
 
   // Setup react-hook-form with Zod validation
   const {
@@ -45,7 +45,7 @@ const Login = () => {
     <div className="absolute top-1/2 left-1/2 -translate-x-[50%] -translate-y-[50%] flex flex-col items-center justify-center h-screen z-[3] w-full">
       <form onSubmit={handleSubmit(handleUserLogin)} className="form">
         <h2 className="text-2xl mb-2 text-[--text-color] font-bold text-center">
-          Docs Share
+          {APP_NAME}
         </h2>
         <p className="text-center text-[--text-color]">Login to your account</p>
         <div className="mb-3">

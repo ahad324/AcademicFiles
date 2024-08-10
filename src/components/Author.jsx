@@ -8,13 +8,10 @@ const Author = () => {
         href="https://ahad324.github.io/AllProjects/"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center bg-[--author-bg] text-[--author-text-color] text-xs p-2 rounded-lg border-2 border-[--author-text-color] transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap"
-        style={{ width: "3rem" }}
-        onMouseEnter={(e) => (e.currentTarget.style.width = "12rem")}
-        onMouseLeave={(e) => (e.currentTarget.style.width = "3rem")}
+        className="flex items-center w-12 bg-[--author-bg] text-[--author-text-color] text-xs p-2 rounded-lg border-2 border-[--author-text-color] transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap hover:w-48"
       >
         <img src={Logo} alt="AbdulAhad" className="w-7 h-7 rounded-full" />
-        <span className="ml-3 hidden sm:inline-block hover:underline">
+        <span className="ml-3 font-semibold inline-block hover:underline">
           Made by AbdulAhad
         </span>
       </a>

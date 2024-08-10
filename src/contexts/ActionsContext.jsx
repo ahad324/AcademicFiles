@@ -26,11 +26,11 @@ const ActionsProvider = ({ children }) => {
     getUserID,
     checkIDInDatabase,
     fetchFilesByUrlID,
+    DomainURL,
   } = useData();
   const [teachers, setTeachers] = useState([]);
   const [teacherImages, setTeacherImages] = useState({});
   const [urlsByTeacher, setUrlsByTeacher] = useState({});
-  const DomainURL = "https://academicfilerelay.netlify.app/";
 
   const createTeacher = async (email, password, username) => {
     const toastId = toast.loading("Creating teacher...");
@@ -210,6 +210,7 @@ const ActionsProvider = ({ children }) => {
         isLoading: true,
         autoClose: toastTimer,
       });
+
       const files = await fetchFilesByUrlID(urlID);
 
       files.map((file) => {

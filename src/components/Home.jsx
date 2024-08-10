@@ -34,7 +34,9 @@ const Home = () => {
     <>
       {User && <Navigate to="/dashboard" />}
       <section className="w-full h-full">
-        <h1>Recieving Files for ID : {id}</h1>
+        <h1 className="text-[--text-color] text-center font-semibold p-6 border-b-2 border-[--text-color] shadow-custom rounded-lg">
+          Receiving Files for ID : {id}
+        </h1>
         <Background />
         <Foreground urlID={id.toString()} />
       </section>

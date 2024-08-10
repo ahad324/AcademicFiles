@@ -18,16 +18,21 @@ import { saveAs } from "file-saver";
 import { toast } from "react-toastify";
 import { useAuth } from "./AuthContext";
 
-const MAX_FILE_SIZE_MB = 50; // Maximum file size in MB
-const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024; // Convert MB to bytes
-const TOTAL_STORAGE = 2048; // In MBs
-
 const DataContext = createContext();
 
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-  const { User, isAdmin, toastTimer } = useAuth();
+  const {
+    User,
+    isAdmin,
+    toastTimer,
+    APP_NAME,
+    DomainURL,
+    MAX_FILE_SIZE_MB,
+    MAX_FILE_SIZE_BYTES,
+    TOTAL_STORAGE,
+  } = useAuth();
   const [allFiles, setAllFiles] = useState([]);
   const [teacherFiles, setteacherFiles] = useState([]);
   const [filesByUrl, setFilesByUrl] = useState({});
@@ -41,7 +46,27 @@ export const DataProvider = ({ children }) => {
   });
   const [userDetails, setUserDetails] = useState({});
 
-  const APP_NAME = "AcademicFileRelay";
+  const fetchFilesByUrlID = async (urlID) => {
+    try {
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTION_ID_FILES,
+        [Query.equal("urlId", urlID)]
+      );
+      const filesData = response.documents.map((file) => ({
+        id: file.$id,
+        desc: file.File[1],
+        filesize: file.File[2],
+        downloadUrl: file.File[3],
+      }));
+      setFilesByUrl((prev) => ({
+        ...prev,
+        [urlID]: filesData,
+      }));
+    } catch (error) {
+      console.error("Error fetching files by URL ID:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -136,13 +161,36 @@ export const DataProvider = ({ children }) => {
       );
     }
 
+    // Setup for Realtime upfates for Files under URL.
+    let urlFilesSubscription;
+    if (urlID) {
+      urlFilesSubscription = client.subscribe(
+        `databases.${DATABASE_ID}.collections.${COLLECTION_ID_FILES}.documents`,
+        (response) => {
+          if (
+            response.events.includes(
+              "databases.*.collections.*.documents.*.create"
+            ) ||
+            response.events.includes(
+              "databases.*.collections.*.documents.*.delete"
+            )
+          ) {
+            fetchFilesByUrlID(urlID);
+          }
+        }
+      );
+    }
+
     return () => {
       fileSubscription();
+      if (urlFilesSubscription) {
+        fetchFilesByUrlID(urlID);
+      }
       if (teacherSubscription) {
         teacherSubscription();
       }
     };
-  }, []);
+  }, [urlID]);
   // [User, isAdmin]
 
   useEffect(() => {
@@ -186,7 +234,8 @@ export const DataProvider = ({ children }) => {
       });
       return false;
     }
-    if (storageOccupied + file.size / (1024 * 1024) > storageData.total) {
+    const newStorageOccupied = storageOccupied + file.size / (1024 * 1024);
+    if (newStorageOccupied > storageData.total) {
       toast.error("Not enough storage left.", { autoClose: toastTimer });
       return false;
     }
@@ -215,7 +264,8 @@ export const DataProvider = ({ children }) => {
         }
       );
       setAllFiles([...allFiles, fileData]);
-      setStorageOccupied((prev) => prev + file.size / (1024 * 1024)); // Update storage occupied
+
+      setStorageOccupied(newStorageOccupied);
       toast.success("File uploaded successfully.", { autoClose: toastTimer });
       return true;
     } catch (error) {
@@ -227,25 +277,28 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const handleFileDelete = async (fileId) => {
+  const handleFileDelete = async (fileId, urlid) => {
     let toastId = toast.loading(`Deleting file...`);
     try {
-      const res = await storage.deleteFile(BUCKET_ID, fileId);
-      const response = await databases.deleteDocument(
-        DATABASE_ID,
-        COLLECTION_ID_FILES,
-        fileId
-      );
+      await storage.deleteFile(BUCKET_ID, fileId);
+      await databases.deleteDocument(DATABASE_ID, COLLECTION_ID_FILES, fileId);
 
       // Update the local state for allFiles
       setAllFiles((prevFiles) =>
         prevFiles.filter((item) => item.id !== fileId)
       );
 
-      // Update the teacherFiles state if it's based on allFiles
+      // Update the teacherFiles state
       setteacherFiles((prevFiles) =>
         prevFiles.filter((item) => item.id !== fileId)
       );
+      // Update urlFiles state
+      if (urlid) {
+        setFilesByUrl((prev) => ({
+          ...prev,
+          [urlid]: prev[urlid].filter((file) => file.id !== fileId),
+        }));
+      }
 
       const updatedFiles = allFiles.filter((item) => item.id !== fileId);
       const totalSize = updatedFiles.reduce(
@@ -366,40 +419,6 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const fetchFilesByUrlID = async (urlID) => {
-    const toastId = toast.loading("Fetching Files by URL...");
-    try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTION_ID_FILES,
-        [Query.equal("urlId", urlID)]
-      );
-      const filesData = response.documents.map((file) => ({
-        id: file.$id,
-        desc: file.File[1],
-        filesize: file.File[2],
-        downloadUrl: file.File[3],
-      }));
-      setFilesByUrl((prev) => ({ ...prev, [urlID]: filesData }));
-      toast.update(toastId, {
-        render: "Fetched Files by URL",
-        type: "success",
-        isLoading: false,
-        autoClose: toastTimer,
-      });
-      return response.documents;
-    } catch (error) {
-      toast.update(toastId, {
-        render: "Failed to fetch files.please try again.",
-        type: "error",
-        isLoading: false,
-        autoClose: toastTimer,
-      });
-      console.error("Error fetching files by urlID:", error);
-      return [];
-    }
-  };
-
   const checkIDInDatabase = async (id) => {
     const toastId = toast.loading("Checking ID...");
     try {
@@ -442,6 +461,8 @@ export const DataProvider = ({ children }) => {
   return (
     <DataContext.Provider
       value={{
+        APP_NAME,
+        DomainURL,
         allFiles,
         teacherFiles,
         urlID,
@@ -453,11 +474,11 @@ export const DataProvider = ({ children }) => {
         getuserdetails,
         userDetails,
         checkIDInDatabase,
-        APP_NAME,
         getProfileImage,
         getUserID,
         fetchFilesByUrlID,
         filesByUrl,
+        MAX_FILE_SIZE_MB,
       }}
     >
       {children}
