@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import Loader from "./Loader";
-import { useData } from "../contexts/DataContext"; // Adjust the import path
+import { useData } from "../contexts/DataContext";
+import { calculation } from "../utils/utils";
 
 const UploadFileButton = () => {
-  const { handleFileUpload, error, MAX_FILE_SIZE_MB } = useData(); // Destructure from context
+  const { handleFileUpload, error, MAX_FILE_SIZE } = useData(); // Destructure from context
   const [isUploading, setIsUploading] = useState(false);
-
+  const { value, unit } = calculation(MAX_FILE_SIZE);
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -40,7 +41,7 @@ const UploadFileButton = () => {
         <p className="text-[--error-color] mt-3 font-semibold">{error}</p>
       )}
       <p className="text-[--text-color] font-semibold mt-3">
-        Maximum file size: {MAX_FILE_SIZE_MB} MB
+        Maximum file size: {value + unit}
       </p>
     </div>
   );

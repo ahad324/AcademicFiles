@@ -8,9 +8,8 @@ import {
 import Loader from "../components/Loader";
 import { toast } from "react-toastify";
 
-const MAX_FILE_SIZE_MB = 50; // Maximum file size in MB
-const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024; // Convert MB to bytes
-const TOTAL_STORAGE = 2048; // In MBs
+const MAX_FILE_SIZE = 52428800; // Maximum file size in Bytes
+const TOTAL_STORAGE = 2147483648; // Total Storage In Bytes
 
 const AuthContext = createContext();
 
@@ -187,8 +186,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const contextValue = {
-    MAX_FILE_SIZE_MB,
-    MAX_FILE_SIZE_BYTES,
+    MAX_FILE_SIZE,
     TOTAL_STORAGE,
     toastTimer,
     APP_NAME,

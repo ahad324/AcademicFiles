@@ -3,6 +3,7 @@ import { useData } from "@contexts/DataContext";
 import { useAction } from "@contexts/ActionsContext";
 import { FaUsers, FaLink } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { calculation } from "../../utils/utils";
 
 const Overview = () => {
   const ref = useRef();
@@ -51,11 +52,21 @@ const Overview = () => {
           </h3>
           <p className="text-[--medium-gray-color] mt-2">
             Total Storage:{" "}
-            <span className="font-semibold">{storageData.total} MB</span>
+            <span className="font-semibold">
+              {(() => {
+                const { value, unit } = calculation(storageData.total);
+                return `${value}${unit}`;
+              })()}
+            </span>
           </p>
           <p className="text-[--medium-gray-color]">
             Storage Occupied:{" "}
-            <span className="font-semibold">{storageData.occupied} MB</span>
+            <span className="font-semibold">
+              {(() => {
+                const { value, unit } = calculation(storageData.occupied);
+                return `${value}${unit}`;
+              })()}
+            </span>
           </p>
           <p className="text-[--medium-gray-color]">
             Percentage Used:{" "}

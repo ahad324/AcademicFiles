@@ -17,6 +17,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { toast } from "react-toastify";
 import { useAuth } from "./AuthContext";
+import { calculation } from "../utils/utils";
 
 const DataContext = createContext();
 
@@ -29,8 +30,7 @@ export const DataProvider = ({ children }) => {
     toastTimer,
     APP_NAME,
     DomainURL,
-    MAX_FILE_SIZE_MB,
-    MAX_FILE_SIZE_BYTES,
+    MAX_FILE_SIZE,
     TOTAL_STORAGE,
   } = useAuth();
   const [allFiles, setAllFiles] = useState([]);
@@ -70,12 +70,15 @@ export const DataProvider = ({ children }) => {
   const fetchAllFiles = async () => {
     try {
       const response = await storage.listFiles(BUCKET_ID);
-      const filesData = response.files.map((file) => ({
-        id: file.$id,
-        desc: file.name,
-        filesize: `${(file.sizeOriginal / 1024).toFixed(2)} KB`,
-        downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${file.$id}/download?project=${PROJECT_ID}`,
-      }));
+      const filesData = response.files.map((file) => {
+        const { value, unit } = calculation(file.sizeOriginal); // Deconstruct value and unit
+        return {
+          id: file.$id,
+          desc: file.name,
+          filesize: `${value} ${unit}`, // Format the size with value and unit
+          downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${file.$id}/download?project=${PROJECT_ID}`,
+        };
+      });
       setAllFiles(filesData);
 
       // Calculate storage usage
@@ -83,7 +86,7 @@ export const DataProvider = ({ children }) => {
         (acc, file) => acc + file.sizeOriginal,
         0
       );
-      setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
+      setStorageOccupied(totalSize); // Convert bytes to MB
     } catch (error) {
       toast.error("Error fetching files.", { autoClose: toastTimer });
       console.error("Error fetching files:", error);
@@ -184,7 +187,7 @@ export const DataProvider = ({ children }) => {
 
     setStorageData({
       total: TOTAL_STORAGE,
-      occupied: parseFloat(storageOccupied).toFixed(2),
+      occupied: storageOccupied,
       percentage: formattedPercentage,
     });
   }, [storageOccupied]);
@@ -213,13 +216,14 @@ export const DataProvider = ({ children }) => {
 
   const handleFileUpload = async (file) => {
     if (!(await checkIDInDatabase(urlID))) return;
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      toast.error(`File size exceeds ${MAX_FILE_SIZE_MB} MB.`, {
+    if (file.size > MAX_FILE_SIZE) {
+      const { value, unit } = calculation(MAX_FILE_SIZE);
+      toast.error(`File size exceeds ${value} ${unit}.`, {
         autoClose: toastTimer,
       });
       return false;
     }
-    const newStorageOccupied = storageOccupied + file.size / (1024 * 1024);
+    const newStorageOccupied = storageOccupied + file.size;
     if (newStorageOccupied > storageData.total) {
       toast.error("Not enough storage left.", { autoClose: toastTimer });
       return false;
@@ -227,12 +231,14 @@ export const DataProvider = ({ children }) => {
 
     try {
       const response = await storage.createFile(BUCKET_ID, ID.unique(), file);
+      const { value, unit } = calculation(response.sizeOriginal); // Deconstruct value and unit
       const fileData = {
         id: response.$id,
         desc: response.name,
-        filesize: `${(file.size / 1024).toFixed(2)} KB`,
+        filesize: `${value} ${unit}`,
         downloadUrl: `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${response.$id}/download?project=${PROJECT_ID}`,
       };
+      // console.log(formatBytes(response.sizeOriginal));
       await databases.createDocument(
         DATABASE_ID,
         COLLECTION_ID_FILES,
@@ -290,7 +296,7 @@ export const DataProvider = ({ children }) => {
         (acc, file) => acc + file.filesize,
         0
       );
-      setStorageOccupied(totalSize / (1024 * 1024)); // Convert bytes to MB
+      setStorageOccupied(totalSize);
       toast.update(toastId, {
         render: "File deleted successfully.",
         type: "success",
@@ -444,31 +450,28 @@ export const DataProvider = ({ children }) => {
       return false;
     }
   };
+  const contextData = {
+    APP_NAME,
+    DomainURL,
+    allFiles,
+    teacherFiles,
+    urlID,
+    storageData,
+    handleFileUpload,
+    handleFileDelete,
+    deleteAllFiles,
+    downloadAllFiles,
+    getuserdetails,
+    userDetails,
+    checkIDInDatabase,
+    getProfileImage,
+    getUserID,
+    fetchFilesByUrlID,
+    filesByUrl,
+    MAX_FILE_SIZE,
+    setFilesByUrl,
+  };
   return (
-    <DataContext.Provider
-      value={{
-        APP_NAME,
-        DomainURL,
-        allFiles,
-        teacherFiles,
-        urlID,
-        storageData,
-        handleFileUpload,
-        handleFileDelete,
-        deleteAllFiles,
-        downloadAllFiles,
-        getuserdetails,
-        userDetails,
-        checkIDInDatabase,
-        getProfileImage,
-        getUserID,
-        fetchFilesByUrlID,
-        filesByUrl,
-        MAX_FILE_SIZE_MB,
-        setFilesByUrl,
-      }}
-    >
-      {children}
-    </DataContext.Provider>
+    <DataContext.Provider value={contextData}>{children}</DataContext.Provider>
   );
 };

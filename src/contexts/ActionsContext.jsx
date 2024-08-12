@@ -6,7 +6,6 @@ import {
   databases,
   DATABASE_ID,
   COLLECTION_ID_TEACHERS,
-  Query,
 } from "@src/AppwriteConfig.js";
 import { toast } from "react-toastify";
 import { useData } from "./DataContext";

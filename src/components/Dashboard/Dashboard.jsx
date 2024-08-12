@@ -16,6 +16,8 @@ import { MdLogout } from "react-icons/md";
 import { useData } from "../../contexts/DataContext";
 import { useAuth } from "../../contexts/AuthContext";
 
+import { calculation } from "../../utils/utils";
+
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { handleLogout, isAdmin } = useAuth();
@@ -161,12 +163,18 @@ const Dashboard = () => {
                     }`}
                   >
                     {/* {parseFloat(storageOccupied).toFixed(2)}MB */}
-                    {storageData.occupied}MB
+
+                    {(() => {
+                      const { value, unit } = calculation(storageData.occupied);
+                      return `${value}${unit}`;
+                    })()}
                   </p>
                   /{" "}
                   <p>
-                    {storageData.total}
-                    MB
+                    {(() => {
+                      const { value, unit } = calculation(storageData.total);
+                      return `${value}${unit}`;
+                    })()}
                   </p>
                 </h2>
               </span>
