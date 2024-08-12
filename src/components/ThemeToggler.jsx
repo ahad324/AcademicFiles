@@ -26,6 +26,7 @@ const ThemeToggler = () => {
         name="ThemeToggler"
         checked={theme === "dark"}
         onChange={handleThemeChange}
+        aria-label="Theme Toggler"
       />
       <svg
         width="24"
