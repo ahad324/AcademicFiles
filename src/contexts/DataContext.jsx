@@ -119,67 +119,63 @@ export const DataProvider = ({ children }) => {
       fetchFilesByUrlID(urlID);
     }
 
-    // Set up real-time updates for all files
-    const allFilesSubscription = client.subscribe("files", (response) => {
-      if (
-        response.events.includes(`buckets.${BUCKET_ID}.files.*.create`) ||
-        response.events.includes(`buckets.${BUCKET_ID}.files.*.delete`)
-      ) {
-        fetchAllFiles(); // Refresh file list on new upload or delete
+    // Real-time updates for files
+    const allFilesSubscription = client.subscribe(
+      `buckets.${BUCKET_ID}.files`,
+      (response) => {
+        if (
+          response.events.includes("buckets.*.files.*.create") ||
+          response.events.includes("buckets.*.files.*.delete")
+        ) {
+          fetchAllFiles();
+        }
       }
-    });
+    );
 
-    // Set up real-time updates for teacher files
-    let teacherFilesSubscription;
-    if (User) {
-      teacherFilesSubscription = client.subscribe(
-        `databases.${DATABASE_ID}.collections.${COLLECTION_ID_FILES}.documents`,
-        (response) => {
-          if (
-            response.events.includes(
-              "databases.*.collections.*.documents.*.create"
-            ) ||
-            response.events.includes(
-              "databases.*.collections.*.documents.*.delete"
-            )
-          ) {
-            fetchTeacherFiles();
+    // Real-time updates for teacher files
+    const teacherFilesSubscription = User
+      ? client.subscribe(
+          `databases.${DATABASE_ID}.collections.${COLLECTION_ID_FILES}.documents`,
+          (response) => {
+            if (
+              response.events.includes(
+                "databases.*.collections.*.documents.*.create"
+              ) ||
+              response.events.includes(
+                "databases.*.collections.*.documents.*.delete"
+              )
+            ) {
+              fetchTeacherFiles();
+            }
           }
-        }
-      );
-    }
+        )
+      : null;
 
-    // Setup for Realtime upfates for Files under URL.
-    let urlFilesSubscription;
-    if (urlID) {
-      urlFilesSubscription = client.subscribe(
-        `databases.${DATABASE_ID}.collections.${COLLECTION_ID_FILES}.documents`,
-        (response) => {
-          if (
-            response.events.includes(
-              "databases.*.collections.*.documents.*.create"
-            ) ||
-            response.events.includes(
-              "databases.*.collections.*.documents.*.delete"
-            )
-          ) {
-            fetchFilesByUrlID(urlID);
+    // Real-time updates for files by URL
+    const urlFilesSubscription = urlID
+      ? client.subscribe(
+          `databases.${DATABASE_ID}.collections.${COLLECTION_ID_FILES}.documents`,
+          (response) => {
+            if (
+              response.events.includes(
+                "databases.*.collections.*.documents.*.create"
+              ) ||
+              response.events.includes(
+                "databases.*.collections.*.documents.*.delete"
+              )
+            ) {
+              fetchFilesByUrlID(urlID);
+            }
           }
-        }
-      );
-    }
+        )
+      : null;
 
     return () => {
       allFilesSubscription();
-      if (urlFilesSubscription) {
-        urlFilesSubscription();
-      }
-      if (teacherFilesSubscription) {
-        teacherFilesSubscription();
-      }
+      teacherFilesSubscription && teacherFilesSubscription();
+      urlFilesSubscription && urlFilesSubscription();
     };
-  }, [urlID]);
-  // [User, isAdmin]
+  }, [User, urlID]);
 
   useEffect(() => {
     const percentageUsed =
@@ -312,8 +308,9 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const downloadAllFiles = async (e) => {
-    const Files = isAdmin ? allFiles : teacherFiles;
+  const downloadAllFiles = async (urlid, e) => {
+    // Determine which files to download
+    const Files = urlid ? filesByUrl[urlid] : isAdmin ? allFiles : teacherFiles;
     if (!Files.length) {
       return;
     }

@@ -3,7 +3,7 @@ import { IoTrash, IoDownload } from "react-icons/io5";
 import { useData } from "@contexts/DataContext";
 
 const Table = ({ files, urlId }) => {
-  const { handleFileDelete } = useData();
+  const { handleFileDelete, downloadAllFiles } = useData();
   const headers = ["Sr No.", "ID", "File Name", "File Size", "Actions"];
 
   const handledelete = (fileid, urlId) => {
@@ -12,8 +12,21 @@ const Table = ({ files, urlId }) => {
   return (
     <div className="relative overflow-x-auto shadow-md rounded-lg border border-[--text-color]">
       <table className="w-full text-sm text-left rtl:text-right text-[--light-gray-color]">
-        <caption className="p-5 text-lg font-semibold text-center bg-[--dark-gray-color]">
+        <caption className="p-5 text-lg font-semibold text-center  bg-[--dark-gray-color]">
           Files List
+          {urlId && files.length > 0 && (
+            <div className="flex justify-end w-ful rounded-lg">
+              <button
+                className="flex items-center relative w-34 px-4 py-2 bg-[--accent-color] text-base text-[--default-text-color] transition duration-500 ease-in-out transform rounded-lg  hover:bg-[--accent-color] hover:bg-green-700"
+                onClick={(e) => downloadAllFiles(urlId, e)}
+              >
+                Download All{" "}
+                <span className="absolute -right-1 w-4 h-4 top-7 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-xs">
+                  {files.length}
+                </span>
+              </button>
+            </div>
+          )}
         </caption>
         <thead className="text-xs text-[--light-gray-color] uppercase bg-[--medium-gray-color]">
           <tr>

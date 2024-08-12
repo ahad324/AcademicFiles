@@ -24,7 +24,10 @@ const Card = ({ data, reference }) => {
       ) : (
         <>
           <FaRegFileAlt />
-          <p className="text-sm leading-tight mt-5 font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
+          <p
+            className="text-sm leading-tight mt-5 font-semibold overflow-hidden text-ellipsis whitespace-nowrap"
+            title={data.desc}
+          >
             {data.desc}
           </p>
           <div className="footer absolute bottom-0 w-full left-0">

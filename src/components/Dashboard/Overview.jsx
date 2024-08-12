@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useRef, useMemo } from "react";
 import { useData } from "@contexts/DataContext";
 import { useAction } from "@contexts/ActionsContext";
 import { FaUsers, FaLink } from "react-icons/fa";
@@ -8,20 +8,8 @@ const Overview = () => {
   const ref = useRef();
   const { teachers, urlsByTeacher } = useAction();
   const { storageData, allFiles, teacherFiles, userDetails } = useData();
-  const [totalUrls, setTotalUrls] = useState(0);
 
-  useEffect(() => {
-    if (urlsByTeacher) {
-      setTotalUrls(
-        Object.values(urlsByTeacher).reduce(
-          (total, urls) => total + urls.length,
-          0
-        )
-      );
-    }
-  }, [urlsByTeacher]);
-
-  // Compute total URLs
+  // Memoize the computation of total URLs
   const computedTotalUrls = useMemo(
     () =>
       Object.values(urlsByTeacher).reduce(
@@ -30,6 +18,9 @@ const Overview = () => {
       ),
     [urlsByTeacher]
   );
+
+  // Memoize the count of teachers
+  const teacherCount = useMemo(() => teachers.length, [teachers]);
 
   return (
     <div className="p-6 text-[--text-color] rounded-lg shadow-custom bg-[--bg-color] h-fit min-h-screen flex flex-col space-y-6">
@@ -108,7 +99,7 @@ const Overview = () => {
             Teachers Count
           </h3>
           <p className="text-[--medium-gray-color] text-[80px] flex items-center justify-center font-semibold">
-            {teachers.length}
+            {teacherCount}
           </p>
         </motion.div>
 

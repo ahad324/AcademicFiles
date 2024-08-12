@@ -127,7 +127,7 @@ const Dashboard = () => {
                 <li>
                   <button
                     className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform rounded-lg  hover:bg-[--accent-color]"
-                    onClick={downloadAllFiles}
+                    onClick={(e) => downloadAllFiles(null, e)}
                   >
                     <IoMdCloudDownload className="w-4 h-4" />
                     <span className="ml-4"> Download All Files</span>
