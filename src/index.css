@@ -27,7 +27,7 @@ body.dark{
   --author-text-color:black;
 }
 body.light{
-  --bg-color:rgb(196 196 203);
+  --bg-color:rgb(220 220 221);
   --text-color:black;
   --text-hover-color:white;
   --card-bg:rgba(255, 255, 255, 0.2);
@@ -48,7 +48,7 @@ body{
 }
 .widget{
   cursor: grab;
-  @apply text-xl p-6 w-fit h-fit flex items-center justify-center border rounded-3xl shadow-custom backdrop-blur-3xl bg-[--card-bg] border-[--text-color] 
+  @apply text-xs p-2 w-fit h-fit flex items-center justify-center border rounded-3xl shadow-custom backdrop-blur-3xl bg-[--card-bg] border-[--text-color] md:text-xl md:p-6
 }
 .card{
   cursor: grab;

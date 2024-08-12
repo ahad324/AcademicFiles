@@ -10,7 +10,7 @@ const Table = ({ files, urlId }) => {
     handleFileDelete(fileid, urlId);
   };
   return (
-    <div className="relative overflow-x-auto shadow-md rounded-lg border border-[--text-color]">
+    <div className="relative overflow-x-auto shadow-md rounded-2xl ">
       <table className="w-full text-sm text-left rtl:text-right text-[--light-gray-color]">
         <caption className="p-5 text-lg font-semibold text-center  bg-[--dark-gray-color]">
           Files List

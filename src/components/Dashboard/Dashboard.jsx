@@ -44,11 +44,11 @@ const Dashboard = () => {
   return (
     <section className="flex overflow-hidden h-screen">
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[--sidebar-bg] transition-transform transform ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[--sidebar-bg] shadow-custom rounded-r-xl overflow-hidden transition-transform transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-100`}
       >
-        <div className="flex flex-col h-full overflow-y-auto shadow-2xl">
+        <div className="flex flex-col h-full overflow-y-auto ">
           <div className="flex flex-col flex-grow pt-5">
             <div className="flex items-center justify-between px-4">
               <h2 className="text-xl font-medium tracking-tighter text-[--default-text-color]">
@@ -61,7 +61,7 @@ const Dashboard = () => {
                 <FaTimes className="w-6 h-6" />
               </button>
             </div>
-            <nav className="flex flex-col flex-grow px-4 mt-5 space-y-1">
+            <nav className="flex flex-col flex-grow px-4 mt-5 justify-between">
               <ul>
                 {/* Navigation items */}
                 <li>
@@ -151,41 +151,45 @@ const Dashboard = () => {
                   </button>
                 </li>
               </ul>
-              <span className="px-4 pt-4 font-medium text-[--default-text-color] uppercase">
-                <p>Storage</p>
-                <h2 className="px-1 py-1 rounded-lg bg-[--default-text-color] text-[--accent-color] text-sm font-semibold w-fit flex ">
-                  <p
-                    className={`${
-                      (storageData.percentage >= 50 &&
-                        storageData.percentage <= 80 &&
-                        "text-yellow-600") ||
-                      (storageData.percentage > 80 && "text-[--error-color]")
-                    }`}
-                  >
-                    {/* {parseFloat(storageOccupied).toFixed(2)}MB */}
+              <div>
+                <span className="w-full bg-red-700 font-medium text-[--default-text-color] uppercase">
+                  <p>Storage</p>
+                  <h2 className="p-1 rounded-lg bg-[--default-text-color] text-[--accent-color] text-sm font-semibold w-fit flex ">
+                    <p
+                      className={`${
+                        (storageData.percentage >= 50 &&
+                          storageData.percentage <= 80 &&
+                          "text-yellow-600") ||
+                        (storageData.percentage > 80 && "text-[--error-color]")
+                      }`}
+                    >
+                      {/* {parseFloat(storageOccupied).toFixed(2)}MB */}
 
-                    {(() => {
-                      const { value, unit } = calculation(storageData.occupied);
-                      return `${value}${unit}`;
-                    })()}
-                  </p>
-                  /{" "}
-                  <p>
-                    {(() => {
-                      const { value, unit } = calculation(storageData.total);
-                      return `${value}${unit}`;
-                    })()}
-                  </p>
-                </h2>
-              </span>
-              <div className="w-full h-4 bg-[--default-text-color] rounded-2xl overflow-hidden mt-2">
-                <div
-                  className="h-full bg-[--accent-color] rounded-2xl transition-all duration-500 ease-in-out"
-                  style={{ width: `${storageData.percentage}%` }}
-                ></div>
-              </div>
-              <div className="text-center text-xl text-[--default-text-color] font-semibold">
-                {storageData.percentage}%
+                      {(() => {
+                        const { value, unit } = calculation(
+                          storageData.occupied
+                        );
+                        return `${value}${unit}`;
+                      })()}
+                    </p>
+                    /{" "}
+                    <p>
+                      {(() => {
+                        const { value, unit } = calculation(storageData.total);
+                        return `${value}${unit}`;
+                      })()}
+                    </p>
+                  </h2>
+                </span>
+                <div className="w-full h-4 bg-[--default-text-color] rounded-2xl overflow-hidden mt-2">
+                  <div
+                    className="h-full bg-[--accent-color] rounded-2xl transition-all duration-500 ease-in-out"
+                    style={{ width: `${storageData.percentage}%` }}
+                  ></div>
+                </div>
+                <div className="text-center text-xl text-[--default-text-color] font-semibold">
+                  {storageData.percentage}%
+                </div>
               </div>
 
               <span
@@ -195,7 +199,7 @@ const Dashboard = () => {
                 <MdLogout className="w-6 h-6" />
                 <span className="ml-4 text-xl"> Logout</span>
               </span>
-              <div className="flex items-center text-left p-3 bg-[--dark-gray-color] rounded-lg lg:absolute bottom-2">
+              <div className="flex items-center text-left p-3 bg-[--dark-gray-color] rounded-lg ">
                 <div className="flex items-center">
                   <div>
                     <img
@@ -224,7 +228,7 @@ const Dashboard = () => {
           isSidebarOpen ? "md:relative" : "md:absolute h-full"
         }`}
       >
-        <header className="w-full bg-[--bg-color] shadow text-[--text-color]">
+        <header className="w-full bg-[--bg-color] shadow-custom border-b-2 border-[--text-color] text-[--text-color]">
           <div className="flex items-center justify-between p-4">
             <button
               className="rounded-lg focus:outline-none focus:shadow-outline"
@@ -249,7 +253,7 @@ const Dashboard = () => {
             </div>
           </div>
         </header>
-        <main className="flex-1 flex flex-col border-2 border-[--text-color] rounded-lg h-full transition-all duration-300">
+        <main className="flex-1 flex flex-col h-full transition-all duration-300">
           <div className="w-full h-full overflow-scroll mb-12">
             <Outlet />
           </div>

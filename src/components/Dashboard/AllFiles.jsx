@@ -7,7 +7,11 @@ const AllFiles = () => {
   const { allFiles, teacherFiles } = useData();
   const filesToRender = isAdmin ? allFiles : teacherFiles;
 
-  return <Table files={filesToRender} />;
+  return (
+    <div className="p-4">
+      <Table files={filesToRender} />;
+    </div>
+  );
 };
 
 export default AllFiles;

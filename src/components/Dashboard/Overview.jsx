@@ -4,6 +4,7 @@ import { useAction } from "@contexts/ActionsContext";
 import { FaUsers, FaLink } from "react-icons/fa";
 import { motion } from "framer-motion";
 import CircularProgressBar from "./CircularProgressBar ";
+import CountUp from "react-countup";
 
 import { calculation } from "@utils/utils";
 
@@ -38,7 +39,7 @@ const Overview = () => {
 
       <div
         ref={ref}
-        className="flex flex-col items-center justify-between h-screen "
+        className="flex flex-col items-center justify-between md:h-screen "
       >
         <motion.div
           drag
@@ -47,10 +48,10 @@ const Overview = () => {
           whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
           dragMomentum={true}
           dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-          className="w-fit bg-[--card-bg] p-12 border border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl text-2xl"
+          className="w-fit bg-[--card-bg] p-4 md:p-12 border border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl md:text-2xl"
           style={{ cursor: "grab" }}
         >
-          <h3 className="text-3xl font-bold text-[--secondary-color]">
+          <h3 className="md:text-3xl font-bold text-[--secondary-color]">
             Storage Information
           </h3>
           <CircularProgressBar percentage={storageData.percentage} size={50} />
@@ -59,7 +60,7 @@ const Overview = () => {
             <span className="font-semibold">
               {(() => {
                 const { value, unit } = calculation(storageData.total);
-                return `${value}${unit}`;
+                return <CountUp startVal={0} end={value} suffix={unit} />;
               })()}
             </span>
           </p>
@@ -68,12 +69,12 @@ const Overview = () => {
             <span className="font-semibold">
               {(() => {
                 const { value, unit } = calculation(storageData.occupied);
-                return `${value}${unit}`;
+                return <CountUp startVal={0} end={value} suffix={unit} />;
               })()}
             </span>
           </p>
         </motion.div>
-        <section className="w-full flex justify-between items-center -translate-y-[550px]">
+        <section className="w-full flex justify-between items-center -translate-y-[340px] md:-translate-y-[550px]">
           <motion.div
             drag
             dragElastic={1}
@@ -84,8 +85,8 @@ const Overview = () => {
             className="widget"
           >
             <p>Your Files Count: </p>
-            <span className="ml-2 font-semibold text-2xl">
-              {teacherFiles.length}
+            <span className="ml-2 font-semibold md:text-2xl">
+              <CountUp startVal={0} end={teacherFiles.length} />
             </span>
           </motion.div>
           <motion.div
@@ -98,8 +99,8 @@ const Overview = () => {
             className="widget"
           >
             <p>All Files Count: </p>
-            <span className="ml-2 font-semibold text-2xl">
-              {allFiles.length}
+            <span className="ml-2 font-semibold md:text-2xl">
+              <CountUp startVal={0} end={allFiles.length} />
             </span>
           </motion.div>
         </section>
@@ -117,7 +118,9 @@ const Overview = () => {
               <FaUsers size="2em" />
               <p className="ml-1 mr-2">Teachers:</p>
             </span>
-            <span className="font-semibold text-2xl">{teacherCount}</span>
+            <span className="font-semibold md:text-2xl">
+              <CountUp startVal={0} end={teacherCount} />
+            </span>
           </motion.div>
 
           <motion.div
@@ -133,7 +136,9 @@ const Overview = () => {
               <FaLink size="2em" />
               <p className="ml-1 mr-2">URL's Count:</p>
             </span>
-            <span className="font-semibold text-2xl">{computedTotalUrls}</span>
+            <span className="font-semibold md:text-2xl">
+              <CountUp startVal={0} end={computedTotalUrls} />
+            </span>
           </motion.div>
         </section>
       </div>
