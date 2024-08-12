@@ -3,7 +3,9 @@ import { useData } from "@contexts/DataContext";
 import { useAction } from "@contexts/ActionsContext";
 import { FaUsers, FaLink } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { calculation } from "../../utils/utils";
+import CircularProgressBar from "./CircularProgressBar ";
+
+import { calculation } from "@utils/utils";
 
 const Overview = () => {
   const ref = useRef();
@@ -36,21 +38,23 @@ const Overview = () => {
 
       <div
         ref={ref}
-        className="grid justify-items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="flex flex-col items-center justify-between h-screen "
       >
         <motion.div
           drag
           dragElastic={1}
           dragConstraints={ref}
-          whileDrag={{ scale: 1.1, cursor: "grabbing" }}
+          whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
           dragMomentum={true}
           dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-          className="card "
+          className="w-fit bg-[--card-bg] p-12 border border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl text-2xl"
+          style={{ cursor: "grab" }}
         >
-          <h3 className="text-2xl font-semibold text-[--secondary-color]">
+          <h3 className="text-3xl font-bold text-[--secondary-color]">
             Storage Information
           </h3>
-          <p className="text-[--medium-gray-color] mt-2">
+          <CircularProgressBar percentage={storageData.percentage} size={50} />
+          <p className="mt-2 text-[--text-color]">
             Total Storage:{" "}
             <span className="font-semibold">
               {(() => {
@@ -59,7 +63,7 @@ const Overview = () => {
               })()}
             </span>
           </p>
-          <p className="text-[--medium-gray-color]">
+          <p className="text-[--text-color]">
             Storage Occupied:{" "}
             <span className="font-semibold">
               {(() => {
@@ -68,69 +72,70 @@ const Overview = () => {
               })()}
             </span>
           </p>
-          <p className="text-[--medium-gray-color]">
-            Percentage Used:{" "}
-            <span className="font-semibold">{storageData.percentage}%</span>
-          </p>
         </motion.div>
+        <section className="w-full flex justify-between items-center -translate-y-[550px]">
+          <motion.div
+            drag
+            dragElastic={1}
+            dragConstraints={ref}
+            whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+            dragMomentum={true}
+            dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+            className="widget"
+          >
+            <p>Your Files Count: </p>
+            <span className="ml-2 font-semibold text-2xl">
+              {teacherFiles.length}
+            </span>
+          </motion.div>
+          <motion.div
+            drag
+            dragElastic={1}
+            dragConstraints={ref}
+            whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+            dragMomentum={true}
+            dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+            className="widget"
+          >
+            <p>All Files Count: </p>
+            <span className="ml-2 font-semibold text-2xl">
+              {allFiles.length}
+            </span>
+          </motion.div>
+        </section>
+        <section className="w-full flex justify-around items-center -translate-y-[120%]">
+          <motion.div
+            drag
+            dragElastic={1}
+            dragConstraints={ref}
+            whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+            dragMomentum={true}
+            dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+            className="widget"
+          >
+            <span className="flex justify-center items-center">
+              <FaUsers size="2em" />
+              <p className="ml-1 mr-2">Teachers:</p>
+            </span>
+            <span className="font-semibold text-2xl">{teacherCount}</span>
+          </motion.div>
 
-        <motion.div
-          drag
-          dragElastic={1}
-          dragConstraints={ref}
-          whileDrag={{ scale: 1.1, cursor: "grabbing" }}
-          dragMomentum={true}
-          dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-          className="card"
-        >
-          <h3 className="text-2xl font-semibold text-[--secondary-color] ">
-            Files Summary
-          </h3>
-          <p className="text-[--medium-gray-color] mt-2">
-            All Files Count:{" "}
-            <span className="font-semibold">{allFiles.length}</span>
-          </p>
-          <p className="text-[--medium-gray-color]">
-            Your Files Count:{" "}
-            <span className="font-semibold">{teacherFiles.length}</span>
-          </p>
-        </motion.div>
-
-        <motion.div
-          drag
-          dragElastic={1}
-          dragConstraints={ref}
-          whileDrag={{ scale: 1.1, cursor: "grabbing" }}
-          dragMomentum={true}
-          dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-          className="card"
-        >
-          <FaUsers size="3em" className="text-[--accent-color]" />
-          <h3 className="text-xl font-semibold text-[--secondary-color] mt-4">
-            Teachers Count
-          </h3>
-          <p className="text-[--medium-gray-color] text-[80px] flex items-center justify-center font-semibold">
-            {teacherCount}
-          </p>
-        </motion.div>
-
-        <motion.div
-          drag
-          dragElastic={1}
-          dragConstraints={ref}
-          whileDrag={{ scale: 1.1, cursor: "grabbing" }}
-          dragMomentum={true}
-          dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-          className="card"
-        >
-          <FaLink size="3em" className="text-[--accent-color]" />
-          <h3 className="text-2xl font-semibold text-[--secondary-color] mt-4">
-            URLs Count
-          </h3>
-          <p className="text-[--medium-gray-color] text-[80px] flex items-center justify-center">
-            {computedTotalUrls}
-          </p>
-        </motion.div>
+          <motion.div
+            drag
+            dragElastic={1}
+            dragConstraints={ref}
+            whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+            dragMomentum={true}
+            dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+            className="widget"
+          >
+            <span className="flex justify-center items-center">
+              <FaLink size="2em" />
+              <p className="ml-1 mr-2">URL's Count:</p>
+            </span>
+            <span className="font-semibold text-2xl">{computedTotalUrls}</span>
+          </motion.div>
+        </section>
       </div>
     </div>
   );
