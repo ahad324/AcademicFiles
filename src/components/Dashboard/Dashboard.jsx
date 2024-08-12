@@ -44,7 +44,7 @@ const Dashboard = () => {
   return (
     <section className="flex overflow-hidden h-screen">
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[--sidebar-bg] shadow-custom rounded-r-xl overflow-hidden transition-transform transform ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[--sidebar-bg] border-r-2 border-[--text-color] shadow-3xl rounded-r-xl overflow-hidden transition-transform transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-100`}
       >
@@ -61,7 +61,7 @@ const Dashboard = () => {
                 <FaTimes className="w-6 h-6" />
               </button>
             </div>
-            <nav className="flex flex-col flex-grow px-4 mt-5 justify-between">
+            <nav className="flex flex-col flex-grow px-4 mt-5 justify-evenly">
               <ul>
                 {/* Navigation items */}
                 <li>
