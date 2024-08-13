@@ -34,11 +34,11 @@ const Home = () => {
     <>
       {User && <Navigate to="/dashboard" />}
       <section className="w-full h-full">
-        <h1 className="text-[--text-color] text-center font-semibold p-6 border-b-2 border-[--text-color] shadow-custom rounded-lg">
+        <h1 className="text-[--default-text-color] text-center font-semibold p-6 border-b-2 border-[--text-color] shadow-custom bg-[--accent-color] rounded-b-3xl  backdrop-blur-3xl absolute top-0 z-[3] w-full">
           Receiving Files for ID : {id}
         </h1>
         <Background />
-        <Foreground urlID={id.toString()} />
+        <Foreground urlID={id} />
       </section>
     </>
   );

@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import Loader from "./Loader";
 import { useData } from "../contexts/DataContext";
 import { calculation } from "../utils/utils";
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 const UploadFileButton = () => {
-  const { handleFileUpload, error, MAX_FILE_SIZE } = useData(); // Destructure from context
+  const { handleFileUpload, MAX_FILE_SIZE } = useData(); // Destructure from context
   const [isUploading, setIsUploading] = useState(false);
   const { value, unit } = calculation(MAX_FILE_SIZE);
   const handleFileChange = async (event) => {
@@ -24,23 +25,20 @@ const UploadFileButton = () => {
       </span>
     </div>
   ) : (
-    <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex justify-between items-center flex-col w-full">
-      <label className="cursor-pointer">
-        <span className="shadow-custom text-[--default-text-color] bg-[--secondary-color] transition-colors hover:bg-[--secondary-color-hover] px-4 py-2 rounded border border-[--default-text-color]">
+    <div className="fixed bottom-2  flex justify-between items-center flex-col w-full">
+      <label className="cursor-pointer flex justify-center items-center">
+        <span className="flex justify-evenly items-center w-44 shadow-custom text-[--default-text-color] bg-[--secondary-color] transition-colors hover:bg-[--secondary-color-hover] p-3  rounded-2xl text-lg font-semibold border-2 border-[--text-color]">
           Upload File
+          <FaCloudUploadAlt size="1.5em" />
         </span>
         <input
           type="file"
-          multiple
           className="hidden"
           onChange={handleFileChange}
           disabled={isUploading}
         />
       </label>
-      {error && (
-        <p className="text-[--error-color] mt-3 font-semibold">{error}</p>
-      )}
-      <p className="text-[--text-color] font-semibold mt-3">
+      <p className="text-[--default-text-color] font-semibold mt-3 border-2 border-[--text-color] shadow-custom bg-[--error-color] p-2 rounded-xl">
         Maximum file size: {value + unit}
       </p>
     </div>

@@ -8,7 +8,10 @@ const InvalidIDError = ({ message = "ID not found" }) => {
   return (
     <>
       {User && <Navigate to="/dashboard" />}
-      <div>{message}</div>
+      <div className="absolute text-[--error-color] text-3xl w-full flex justify-center items-center h-full flex-col">
+        <h2 className="font-bold">{message}</h2>
+        <p>Please ask your teacher to provide with a valid ID.</p>
+      </div>
     </>
   );
 };
