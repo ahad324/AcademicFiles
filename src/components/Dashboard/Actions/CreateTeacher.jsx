@@ -38,10 +38,10 @@ const CreateTeacher = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen z-[3] w-full">
       <form onSubmit={handleSubmit(handleCreateTeacher)} className="form">
-        <h2 className="text-2xl mb-2 text-[--text-color] font-bold text-center">
+        <h2 className="text-2xl mb-2 text-[--default-text-color] font-bold text-center">
           Create Teacher
         </h2>
-        <p className="text-center text-[--text-color]">
+        <p className="text-center text-[--default-text-color]">
           Fill in the details to create a new teacher
         </p>
         <div className="mb-3">

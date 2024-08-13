@@ -57,15 +57,15 @@ body{
 }
 
 .form {
-  @apply backdrop-blur-md border border-[--text-color] rounded-3xl p-6 shadow-custom w-full max-w-md;
+  @apply backdrop-blur-md bg-[--secondary-color] border-2 border-[--text-color] rounded-3xl p-6 shadow-custom w-full max-w-lg;
 }
 
 .form input {
-  @apply p-2 border rounded w-full;
+  @apply p-2 border rounded w-full ;
 }
 
 .form button {
-  @apply shadow-custom transition-colors bg-[--secondary-color] text-[--default-text-color] py-2 rounded w-full font-semibold hover:bg-[--secondary-color-hover];
+  @apply shadow-custom transition-colors bg-black text-[--default-text-color] py-2 rounded w-full font-semibold hover:bg-[--dark-gray-color] ;
 }
 
 .form .error {

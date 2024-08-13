@@ -86,12 +86,12 @@ const Settings = () => {
   return !isAdmin ? (
     <div className="flex flex-col items-center justify-evenly h-screen z-[3] w-full">
       <form className="form w-full max-w-md">
-        <h2 className="font-semibold text-3xl text-[--text-color] text-left">
+        <h2 className="font-semibold text-3xl text-[--default-text-color] text-left">
           Settings
         </h2>
         <div className="mb-6">
           <label
-            className="block text-[--text-color] font-bold mb-2"
+            className="block text-[--default-text-color] font-bold mb-2"
             htmlFor="username"
           >
             Name
@@ -127,7 +127,7 @@ const Settings = () => {
 
         <div className="mb-6">
           <label
-            className="block text-[--text-color] font-bold mb-2"
+            className="block text-[--default-text-color] font-bold mb-2"
             htmlFor="email"
           >
             Email
@@ -163,7 +163,7 @@ const Settings = () => {
 
         <div className="mb-6">
           <label
-            className="block text-[--text-color] font-bold mb-2"
+            className="block text-[--default-text-color] font-bold mb-2"
             htmlFor="password"
           >
             Password

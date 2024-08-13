@@ -44,10 +44,12 @@ const Login = () => {
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-[50%] -translate-y-[50%] flex flex-col items-center justify-center h-screen z-[3] w-full">
       <form onSubmit={handleSubmit(handleUserLogin)} className="form">
-        <h2 className="text-2xl mb-2 text-[--text-color] font-bold text-center">
+        <h2 className="text-2xl mb-2 text-[--default-text-color] font-bold text-center">
           {APP_NAME}
         </h2>
-        <p className="text-center text-[--text-color]">Login to your account</p>
+        <p className="text-center text-[--default-text-color]">
+          Login to your account
+        </p>
         <div className="mb-3">
           <input
             type="email"
