@@ -19,7 +19,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { calculation } from "../../utils/utils";
 
 const Dashboard = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { handleLogout, isAdmin } = useAuth();
   const { teacherFiles } = useData();
 
@@ -44,7 +44,7 @@ const Dashboard = () => {
   return (
     <section className="flex overflow-hidden h-screen">
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[--sidebar-bg] border-r-2 border-[--text-color] shadow-3xl rounded-r-xl overflow-hidden transition-transform transform ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[--sidebar-bg] border-r-4 border-[--text-color] shadow-3xl rounded-r-xl overflow-hidden transition-transform transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-100`}
       >
@@ -69,7 +69,7 @@ const Dashboard = () => {
                     className={({ isActive }) =>
                       `inline-flex items-center w-full px-4 py-2 mt-1 text-base transition duration-500 ease-in-out transform rounded-lg text-[--default-text-color] ${
                         isActive
-                          ? "bg-indigo-500"
+                          ? "bg-indigo-500 "
                           : "hover:bg-[--secondary-color-hover]"
                       }`
                     }
@@ -228,7 +228,7 @@ const Dashboard = () => {
           isSidebarOpen ? "md:relative" : "md:absolute h-full"
         }`}
       >
-        <header className="w-full bg-[--bg-color] shadow-custom border-b-2 border-[--text-color] text-[--text-color]">
+        <header className="w-full bg-[--bg-color] shadow-custom border-b-4 rounded-b-2xl border-[--text-color] text-[--text-color]">
           <div className="flex items-center justify-between p-4">
             <button
               className="rounded-lg focus:outline-none focus:shadow-outline"

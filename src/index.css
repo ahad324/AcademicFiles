@@ -46,9 +46,10 @@ body{
 ::-webkit-scrollbar{
   display: none;
 }
+
 .widget{
   cursor: grab;
-  @apply text-xs p-2 w-fit h-fit flex items-center justify-center border rounded-3xl shadow-custom backdrop-blur-3xl bg-[--card-bg] border-[--text-color] md:text-xl md:p-6
+  @apply text-xs p-2 w-fit h-fit flex items-center justify-center border-4 rounded-3xl shadow-custom backdrop-blur-3xl bg-[--card-bg] border-[--text-color] md:text-xl md:p-6
 }
 .card{
   cursor: grab;

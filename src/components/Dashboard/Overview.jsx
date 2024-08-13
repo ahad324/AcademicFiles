@@ -1,15 +1,16 @@
 import React, { useRef, useMemo } from "react";
+import { useAuth } from "@contexts/AuthContext";
 import { useData } from "@contexts/DataContext";
 import { useAction } from "@contexts/ActionsContext";
-import { FaUsers, FaLink } from "react-icons/fa";
+// import { FaUsers, FaLink } from "react-icons/fa";
 import { motion } from "framer-motion";
 import CircularProgressBar from "./CircularProgressBar ";
 import CountUp from "react-countup";
-
 import { calculation } from "@utils/utils";
 
 const Overview = () => {
   const ref = useRef();
+  const { isAdmin } = useAuth();
   const { teachers, urlsByTeacher } = useAction();
   const { storageData, allFiles, teacherFiles, userDetails } = useData();
 
@@ -28,14 +29,12 @@ const Overview = () => {
 
   return (
     <div className="p-6 text-[--text-color] rounded-lg shadow-custom bg-[--bg-color] h-fit min-h-screen flex flex-col space-y-6">
-      <div className="bg-[--accent-color] border border-[--text-color] text-[--default-text-color] text-center text-3xl p-6 rounded-lg shadow-md">
+      <div className="text-[--text-color] text-center text-5xl p-6 rounded-lg">
         <h1 className="font-semibold">
-          Welcome, {userDetails.name || "Guest"}!
+          Welcome, {userDetails.name || "Guest"}!👋
         </h1>
         <p className="mt-2 text-lg">Here’s an overview of your dashboard.</p>
       </div>
-
-      <h2 className="text-3xl font-semibold text-[--text-color]">Overview</h2>
 
       <div
         ref={ref}
@@ -48,15 +47,15 @@ const Overview = () => {
           whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
           dragMomentum={true}
           dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-          className="w-fit bg-[--card-bg] p-4 md:p-12 border border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl md:text-2xl"
+          className="w-fit bg-[--card-bg] p-4 border-4 md:p-12 border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl md:text-2xl"
           style={{ cursor: "grab" }}
         >
           <h3 className="md:text-3xl font-bold text-[--secondary-color]">
-            Storage Information
+            Storage Information 📊
           </h3>
           <CircularProgressBar percentage={storageData.percentage} size={50} />
           <p className="mt-2 text-[--text-color]">
-            Total Storage:{" "}
+            Total Storage 💾:{" "}
             <span className="font-semibold">
               {(() => {
                 const { value, unit } = calculation(storageData.total);
@@ -65,7 +64,7 @@ const Overview = () => {
             </span>
           </p>
           <p className="text-[--text-color]">
-            Storage Occupied:{" "}
+            Storage Occupied 🗄️:{" "}
             <span className="font-semibold">
               {(() => {
                 const { value, unit } = calculation(storageData.occupied);
@@ -84,44 +83,48 @@ const Overview = () => {
             dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
             className="widget"
           >
-            <p>Your Files Count: </p>
+            <p>Your Files 📁: </p>
             <span className="ml-2 font-semibold md:text-2xl">
               <CountUp startVal={0} end={teacherFiles.length} />
             </span>
           </motion.div>
-          <motion.div
-            drag
-            dragElastic={1}
-            dragConstraints={ref}
-            whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
-            dragMomentum={true}
-            dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-            className="widget"
-          >
-            <p>All Files Count: </p>
-            <span className="ml-2 font-semibold md:text-2xl">
-              <CountUp startVal={0} end={allFiles.length} />
-            </span>
-          </motion.div>
+          {isAdmin && (
+            <motion.div
+              drag
+              dragElastic={1}
+              dragConstraints={ref}
+              whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+              dragMomentum={true}
+              dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+              className="widget"
+            >
+              <p>All Files 📦: </p>
+              <span className="ml-2 font-semibold md:text-2xl">
+                <CountUp startVal={0} end={allFiles.length} />
+              </span>
+            </motion.div>
+          )}
         </section>
         <section className="w-full flex justify-around items-center -translate-y-[120%]">
-          <motion.div
-            drag
-            dragElastic={1}
-            dragConstraints={ref}
-            whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
-            dragMomentum={true}
-            dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-            className="widget"
-          >
-            <span className="flex justify-center items-center">
-              <FaUsers size="2em" />
-              <p className="ml-1 mr-2">Teachers:</p>
-            </span>
-            <span className="font-semibold md:text-2xl">
-              <CountUp startVal={0} end={teacherCount} />
-            </span>
-          </motion.div>
+          {isAdmin && (
+            <motion.div
+              drag
+              dragElastic={1}
+              dragConstraints={ref}
+              whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+              dragMomentum={true}
+              dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+              className="widget"
+            >
+              <span className="flex justify-center items-center">
+                {/* <FaUsers size="2em" /> */}
+                <p>Teachers 👩‍🏫👨‍🏫:</p>
+              </span>
+              <span className="ml-2 font-semibold md:text-2xl">
+                <CountUp startVal={0} end={teacherCount} />
+              </span>
+            </motion.div>
+          )}
 
           <motion.div
             drag
@@ -133,10 +136,10 @@ const Overview = () => {
             className="widget"
           >
             <span className="flex justify-center items-center">
-              <FaLink size="2em" />
-              <p className="ml-1 mr-2">URL's Count:</p>
+              {/* <FaLink size="2em" /> */}
+              <p>URL's 🔗:</p>
             </span>
-            <span className="font-semibold md:text-2xl">
+            <span className="ml-2 font-semibold md:text-2xl">
               <CountUp startVal={0} end={computedTotalUrls} />
             </span>
           </motion.div>
