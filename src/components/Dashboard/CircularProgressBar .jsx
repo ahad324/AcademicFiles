@@ -36,7 +36,7 @@ const CircularProgressBar = ({ percentage, size = 100 }) => {
           className="transition-all duration-1000 ease-in-out"
         />
       </svg>
-      <span className="absolute md:text-4xl font-bold text-[--text-color]">
+      <span className="absolute text-3xl md:text-4xl font-bold text-[--text-color]">
         {percentage}%
       </span>
     </div>

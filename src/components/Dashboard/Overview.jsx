@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useEffect, useState } from "react";
 import { useAuth } from "@contexts/AuthContext";
 import { useData } from "@contexts/DataContext";
 import { useAction } from "@contexts/ActionsContext";
@@ -12,8 +12,22 @@ const Overview = () => {
   const ref = useRef();
   const { isAdmin } = useAuth();
   const { teachers, urlsByTeacher } = useAction();
-  const { storageData, allFiles, teacherFiles, userDetails } = useData();
+  const { storageData, allFiles, teacherFiles, userDetails, getUserID } =
+    useData();
 
+  const [userUrlsCount, setUserUrlsCount] = useState(0);
+
+  // Fetch user ID and calculate URLs for the user
+  const getID = async () => {
+    const id = await getUserID();
+    if (urlsByTeacher[id]) {
+      setUserUrlsCount(urlsByTeacher[id].length);
+    }
+  };
+
+  useEffect(() => {
+    getID();
+  }, [urlsByTeacher]);
   // Memoize the computation of total URLs
   const computedTotalUrls = useMemo(
     () =>
@@ -50,7 +64,7 @@ const Overview = () => {
           className="w-fit bg-[--card-bg] p-4 border-4 md:p-12 border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl md:text-2xl"
           style={{ cursor: "grab" }}
         >
-          <h3 className="md:text-3xl font-bold text-[--secondary-color]">
+          <h3 className="text-2xl md:text-3xl font-bold text-[--secondary-color]">
             Storage Information 📊
           </h3>
           <CircularProgressBar percentage={storageData.percentage} size={50} />
@@ -105,25 +119,42 @@ const Overview = () => {
             </motion.div>
           )}
         </section>
-        <section className="w-full flex justify-around items-center -translate-y-[120%]">
+        <section className="w-full flex justify-around items-center -translate-y-0 flex-col md:-translate-y-[120%] md:flex-row">
           {isAdmin && (
-            <motion.div
-              drag
-              dragElastic={1}
-              dragConstraints={ref}
-              whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
-              dragMomentum={true}
-              dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-              className="widget"
-            >
-              <span className="flex justify-center items-center">
-                {/* <FaUsers size="2em" /> */}
-                <p>Teachers 👩‍🏫👨‍🏫:</p>
-              </span>
-              <span className="ml-2 font-semibold md:text-2xl">
-                <CountUp startVal={0} end={teacherCount} />
-              </span>
-            </motion.div>
+            <>
+              <motion.div
+                drag
+                dragElastic={1}
+                dragConstraints={ref}
+                whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+                dragMomentum={true}
+                dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+                className="widget"
+              >
+                <span className="flex justify-center items-center">
+                  <p>Teachers 👩‍🏫👨‍🏫:</p>
+                </span>
+                <span className="ml-2 font-semibold md:text-2xl">
+                  <CountUp startVal={0} end={teacherCount} />
+                </span>
+              </motion.div>
+              <motion.div
+                drag
+                dragElastic={1}
+                dragConstraints={ref}
+                whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+                dragMomentum={true}
+                dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+                className="widget"
+              >
+                <span className="flex justify-center items-center">
+                  <p>All URL's 🔗:</p>
+                </span>
+                <span className="ml-2 font-semibold md:text-2xl">
+                  <CountUp startVal={0} end={computedTotalUrls} />
+                </span>
+              </motion.div>
+            </>
           )}
 
           <motion.div
@@ -136,11 +167,10 @@ const Overview = () => {
             className="widget"
           >
             <span className="flex justify-center items-center">
-              {/* <FaLink size="2em" /> */}
-              <p>URL's 🔗:</p>
+              <p>Your URL's 🔗:</p>
             </span>
             <span className="ml-2 font-semibold md:text-2xl">
-              <CountUp startVal={0} end={computedTotalUrls} />
+              <CountUp startVal={0} end={userUrlsCount} />
             </span>
           </motion.div>
         </section>
