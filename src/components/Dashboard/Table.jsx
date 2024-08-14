@@ -64,7 +64,7 @@ const Table = ({ files, urlId }) => {
                 onClick={(e) => downloadAllFiles(urlId, e)}
               >
                 Download All Files{" "}
-                <span className="absolute -right-1 w-4 h-4 top-7 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-xs">
+                <span className="absolute -right-1 p-1 w-fit h-5 top-7 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-sm overflow-scroll">
                   {files.length}
                 </span>
               </button>

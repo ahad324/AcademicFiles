@@ -46,6 +46,11 @@ export const DataProvider = ({ children }) => {
   });
   const [userDetails, setUserDetails] = useState({});
 
+  // States for Files Dwonloading
+  const [filesDownloaded, setFilesDownloaded] = useState(0);
+  const [totalFiles, setTotalFiles] = useState(0);
+  const [showDownloadingToast, setshowDownloadingToast] = useState(false);
+
   const fetchFilesByUrlID = async (urlID) => {
     try {
       const response = await databases.listDocuments(
@@ -320,7 +325,10 @@ export const DataProvider = ({ children }) => {
     if (!Files.length) {
       return;
     }
-    e.target.textContent = "Downloading...";
+    setFilesDownloaded(0); // Reset the counter
+    setTotalFiles(Files.length);
+    setshowDownloadingToast(true);
+    e.target.disabled = true;
     const zip = new JSZip();
     const folder = zip.folder("files");
 
@@ -338,6 +346,7 @@ export const DataProvider = ({ children }) => {
 
           const blob = await response.blob();
           folder.file(file.desc, blob);
+          setFilesDownloaded((prevCount) => prevCount + 1); // Update the count
         } catch (error) {
           console.error(`Error fetching file ${file.desc}:`, error);
         }
@@ -348,16 +357,20 @@ export const DataProvider = ({ children }) => {
       const content = await zip.generateAsync({ type: "blob" });
       saveAs(content, "files.zip");
 
-      e.target.textContent = "Download All Files";
+      setTimeout(() => {
+        setshowDownloadingToast(false);
+      }, 3000);
+      e.target.disabled = false;
       toast.success("All files downloaded successfully.", {
         autoClose: toastTimer,
       });
     } catch (error) {
+      setshowDownloadingToast(false);
       toast.error("Error creating ZIP file. Please try again.", {
         autoClose: toastTimer,
       });
       console.error("Error creating ZIP file:", error);
-      e.target.textContent = "Download All Files";
+      e.target.disabled = false;
     }
   };
 
@@ -366,7 +379,7 @@ export const DataProvider = ({ children }) => {
     if (!Files.length) {
       return;
     }
-    e.target.textContent = "Deleting...";
+    e.target.disabled = true;
     try {
       const deletePromises = Files.map(async (file) => {
         await handleFileDelete(file.id);
@@ -390,7 +403,7 @@ export const DataProvider = ({ children }) => {
       });
       console.error("Error deleting all files:", error);
     } finally {
-      e.target.textContent = "Delete All Files";
+      e.target.disabled = false;
     }
   };
 
@@ -470,6 +483,9 @@ export const DataProvider = ({ children }) => {
     filesByUrl,
     MAX_FILE_SIZE,
     setFilesByUrl,
+    filesDownloaded,
+    totalFiles,
+    showDownloadingToast,
   };
   return (
     <DataContext.Provider value={contextData}>{children}</DataContext.Provider>

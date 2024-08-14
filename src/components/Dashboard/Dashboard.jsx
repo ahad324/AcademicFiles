@@ -13,10 +13,11 @@ import { AiOutlineFile } from "react-icons/ai";
 import { IoMdCloudDownload } from "react-icons/io";
 import { MdLogout } from "react-icons/md";
 
-import { useData } from "../../contexts/DataContext";
-import { useAuth } from "../../contexts/AuthContext";
+import { useData } from "@contexts/DataContext";
+import { useAuth } from "@contexts/AuthContext";
 
-import { calculation } from "../../utils/utils";
+import { calculation } from "@utils/utils";
+import DownloadingToast from "./DownloadingToast";
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -243,19 +244,14 @@ const Dashboard = () => {
             <div className="flex flex-col">
               <h1 className="text-2xl font-semibold">Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              {/* <button className="p-1 bg-gray-200 rounded-full">
-                <FaBell className="w-6 h-6 text-gray-700" />
-              </button>
-              <button className="p-1 bg-gray-200 rounded-full">
-                <FaPlus className="w-6 h-6 text-gray-700" />
-              </button> */}
-            </div>
+            {/* Don't remove this div */}
+            <div></div>
           </div>
         </header>
         <main className="flex-1 flex flex-col h-full transition-all duration-300">
           <div className="w-full h-full overflow-scroll mb-12">
             <Outlet />
+            <DownloadingToast />
           </div>
         </main>
       </div>
