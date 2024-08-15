@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
-import { FaUserPlus, FaLink, FaUsers } from "react-icons/fa";
+import { FaUserPlus, FaLink, FaUsers, FaNetworkWired } from "react-icons/fa";
 import "@src/styles/NavTabs.css"; // Make sure the path is correct
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -74,7 +74,7 @@ const Actions = () => {
                 }`
               }
             >
-              <FaUsers className="Tabsicon" />
+              <FaNetworkWired className="Tabsicon" />
               <span className="ml-2">View All URLs</span>
             </NavLink>
           </li>

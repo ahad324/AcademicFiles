@@ -20,7 +20,7 @@ const UploadFileButton = () => {
 
   return isUploading ? (
     <div className="fixed h-full w-full">
-      <span className="fixed top-1/2 left-1/2 text-xl text-center transform -translate-x-1/2 font-semibold text-[--text-color] backdrop-blur-md border border-[--text-color] rounded-3xl p-4 bg-[--card-bg]">
+      <span className="fixed top-1/2 left-1/2 text-xl text-center transform -translate-x-1/2 font-semibold text-[--text-color] backdrop-blur-md border-2 border-[--text-color] rounded-3xl p-4 bg-[--card-bg]">
         <Loader /> <p>Uploading...</p>
       </span>
     </div>

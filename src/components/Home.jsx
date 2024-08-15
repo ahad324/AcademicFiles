@@ -34,9 +34,11 @@ const Home = () => {
     <>
       {User && <Navigate to="/dashboard" />}
       <section className="w-full h-full">
-        <h1 className="text-[--default-text-color] text-center font-semibold p-6 border-b-2 border-[--text-color] shadow-custom bg-[--accent-color] rounded-b-3xl  backdrop-blur-3xl absolute top-0 z-[3] w-full">
-          Receiving Files for ID : {id}
-        </h1>
+        <div className="text-[--default-text-color] text-center font-semibold py-6 border-b-4 border-[--text-color] shadow-custom bg-[--secondary-color] rounded-b-3xl  backdrop-blur-3xl fixed top-0 z-[3] w-full">
+          <span className="bg-black p-4 rounded-lg shadow-custom border">
+            Receiving Files for ID : {id}
+          </span>
+        </div>
         <Background />
         <Foreground urlID={id} />
       </section>

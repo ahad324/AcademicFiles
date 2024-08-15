@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Table from "./Table";
 import { useData } from "@contexts/DataContext";
 import { useAuth } from "../../contexts/AuthContext";

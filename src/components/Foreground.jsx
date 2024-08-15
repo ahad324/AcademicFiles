@@ -21,7 +21,7 @@ const Foreground = ({ urlID }) => {
   return (
     <>
       {files.length > 0 && (
-        <div className="text-[--text-color]  absolute z-[3] top-20 w-full flex justify-end items-center">
+        <div className="text-[--text-color]  absolute z-[2] top-20 w-full flex justify-end items-center">
           <h2 className="p-3 rounded-lg border-2 border-[--accent-color] backdrop-blur-3xl shadow-custom font-semibold">
             Files Count: <CountUp start={0} end={files.length} duration={5} />
           </h2>
@@ -29,7 +29,7 @@ const Foreground = ({ urlID }) => {
       )}
       <div
         ref={ref}
-        className="relative top-10 left-0 z-[1] w-full h-full p-5 overflow-auto flex flex-wrap gap-10 justify-center items-center pt-20"
+        className="fixed top-10 left-0 z-[1] w-full h-full p-5 py-52 overflow-auto flex flex-wrap gap-10 justify-center items-center pt-14"
       >
         {loading ? (
           <Loader />

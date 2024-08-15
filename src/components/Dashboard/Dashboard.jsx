@@ -9,7 +9,7 @@ import {
   FaTrashAlt,
   FaTools,
 } from "react-icons/fa"; // Import icons from react-icons
-import { AiOutlineFile } from "react-icons/ai";
+import { LuFileStack } from "react-icons/lu";
 import { IoMdCloudDownload } from "react-icons/io";
 import { MdLogout } from "react-icons/md";
 
@@ -91,7 +91,7 @@ const Dashboard = () => {
                     }
                     to="allfiles"
                   >
-                    <AiOutlineFile className="w-4 h-4" />
+                    <LuFileStack className="w-4 h-4" />
                     <span className="ml-4">All Files </span>
                   </NavLink>
                 </li>
