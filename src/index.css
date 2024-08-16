@@ -57,7 +57,7 @@ body{
 }
 
 .form {
-  @apply backdrop-blur-md bg-[--secondary-color] border-2 border-[--text-color] rounded-3xl p-6 shadow-custom w-full max-w-lg;
+  @apply backdrop-blur-md bg-[--dark-gray-color] border-2 border-[--text-color] rounded-3xl p-6 shadow-custom w-full max-w-lg;
 }
 
 .form input {
@@ -65,7 +65,7 @@ body{
 }
 
 .form button {
-  @apply shadow-custom transition-colors bg-black text-[--default-text-color] py-2 rounded w-full font-semibold hover:bg-[--dark-gray-color] ;
+  @apply shadow-custom transition-colors bg-[--secondary-color] text-[--default-text-color] py-2 rounded w-full font-semibold hover:bg-[--secondary-color-hover] ;
 }
 
 .form .error {

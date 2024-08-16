@@ -47,7 +47,7 @@ const Login = () => {
         <h2 className="text-2xl mb-2 text-[--default-text-color] font-bold text-center">
           {APP_NAME}
         </h2>
-        <p className="text-center text-[--default-text-color]">
+        <p className="text-center text-[--default-text-color] mb-4">
           Login to your account
         </p>
         <div className="mb-3">

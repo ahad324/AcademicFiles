@@ -42,7 +42,7 @@ const Overview = () => {
   const teacherCount = useMemo(() => teachers.length, [teachers]);
 
   return (
-    <div className="p-6 text-[--text-color] rounded-lg shadow-custom bg-[--bg-color] h-fit min-h-screen flex flex-col space-y-6">
+    <div className="p-6 text-[--text-color] rounded-lg h-fit min-h-screen flex flex-col space-y-6">
       <div className="text-[--text-color] text-center text-5xl p-6 rounded-lg">
         <h1 className="font-semibold">
           Welcome, {userDetails.name || "Guest"}!👋
@@ -61,7 +61,7 @@ const Overview = () => {
           whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
           dragMomentum={true}
           dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-          className="w-fit bg-[--card-bg] p-4 border-4 md:p-12 border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl md:text-2xl"
+          className="w-fit bg-[--card-bg] p-4 border-4 md:p-10 border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl md:text-2xl"
           style={{ cursor: "grab" }}
         >
           <h3 className="text-2xl md:text-3xl font-bold text-[--secondary-color]">

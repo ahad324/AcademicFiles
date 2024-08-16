@@ -41,7 +41,7 @@ const CreateTeacher = () => {
         <h2 className="text-2xl mb-2 text-[--default-text-color] font-bold text-center">
           Create Teacher
         </h2>
-        <p className="text-center text-[--default-text-color]">
+        <p className="text-center text-[--default-text-color] mb-4">
           Fill in the details to create a new teacher
         </p>
         <div className="mb-3">
