@@ -142,7 +142,10 @@ const Dashboard = () => {
                 <li>
                   <button
                     className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform rounded-lg hover:bg-[--error-color]"
-                    onClick={deleteAllFiles}
+                    popovertarget={`${
+                      (isAdmin ? allFiles.length : teacherFiles.length) > 0 &&
+                      "DeleteAllFilesConfirmationMessage"
+                    }`}
                   >
                     <FaTrashAlt className="w-4 h-4" />
                     <span className="ml-4"> Delete All Files</span>
@@ -150,6 +153,38 @@ const Dashboard = () => {
                       {isAdmin ? allFiles.length : teacherFiles.length}
                     </span>
                   </button>
+                  <div
+                    id="DeleteAllFilesConfirmationMessage"
+                    className="popover"
+                    popover="true"
+                  >
+                    <div>
+                      <p>
+                        Are you sure?
+                        <br /> This action cannot be undone!
+                      </p>
+                      <span>
+                        <button
+                          onClick={() => {
+                            deleteAllFiles();
+                            setTimeout(() => {
+                              document
+                                .getElementById(
+                                  "DeleteAllFilesConfirmationMessage"
+                                )
+                                .hidePopover();
+                            }, 100);
+                          }}
+                          className="confirm"
+                        >
+                          Confirm
+                        </button>
+                        <button popovertarget="DeleteAllFilesConfirmationMessage">
+                          Cancel
+                        </button>
+                      </span>
+                    </div>
+                  </div>
                 </li>
               </ul>
               <div>

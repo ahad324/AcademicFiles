@@ -20,7 +20,7 @@ const Actions = () => {
       {shouldRedirectTeacher && (
         <Navigate to="/dashboard/actions/createurl" replace />
       )}
-      <nav className="border-b-4 rounded-b-3xl shadow-custom border-[--text-color] p-2 flex flex-col sm:flex-row items-center justify-center">
+      <nav className="border-b-4 rounded-b-3xl shadow-custom overflow-auto border-[--text-color] p-2 flex flex-col sm:flex-row items-center justify-center">
         <ul className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
           {isAdmin && (
             <li>

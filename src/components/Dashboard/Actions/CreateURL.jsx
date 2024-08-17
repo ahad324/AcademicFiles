@@ -8,12 +8,14 @@ const CreateURL = () => {
   const [copied, setCopied] = useState(false);
   const { createURL, DomainURL, copyToClipboard, toastTimer } = useAction();
 
-  const handleCreate = async () => {
+  const handleCreate = async (e) => {
+    e.target.disabled = true;
     if (urlID.trim() === "") {
       toast.error("URL ID cannot be empty", { autoClose: toastTimer });
       return;
     }
     await createURL(urlID);
+    e.target.disabled = false;
   };
 
   const handleCopy = () => {
@@ -25,19 +27,27 @@ const CreateURL = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen p-4 overflow-auto">
-      <div className="bg-[--dark-gray-color] p-6 rounded-lg shadow-custom border border-[--text-color]">
-        <div className="flex items-center justify-center mb-4">
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="bg-[--dark-gray-color] p-6 rounded-lg shadow-custom border border-[--text-color] overflow-auto w-full xs:w-fit">
+        <div className="flex items-center justify-between h-28 xs:h-fit xs:justify-center mb-4 flex-col xs:flex-row ">
           <input
             type="text"
+            autoFocus
             value={urlID}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleCreate(e);
+              }
+            }}
             onChange={(e) => setUrlID(e.target.value.replace(/\s/g, ""))}
             placeholder="Enter ID"
-            className="p-2.5 border border-[--medium-gray-color] rounded-l-lg w-64"
+            className="p-2.5 border border-[--medium-gray-color] rounded-lg xs:rounded-r-none w-64"
           />
           <button
-            onClick={handleCreate}
-            className="bg-[--secondary-color] text-[--default-text-color] p-2.5 rounded-r-lg hover:bg-[--secondary-color-hover]"
+            onClick={(e) => {
+              handleCreate(e);
+            }}
+            className="bg-[--secondary-color] text-[--default-text-color] p-2.5 rounded-lg xs:rounded-l-none hover:bg-[--secondary-color-hover]"
           >
             Create
           </button>

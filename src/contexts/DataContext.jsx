@@ -374,12 +374,11 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const deleteAllFiles = async (e) => {
+  const deleteAllFiles = async () => {
     const Files = isAdmin ? allFiles : teacherFiles;
     if (!Files.length) {
       return;
     }
-    e.target.disabled = true;
     try {
       const deletePromises = Files.map(async (file) => {
         await handleFileDelete(file.id);
@@ -402,8 +401,6 @@ export const DataProvider = ({ children }) => {
         autoClose: toastTimer,
       });
       console.error("Error deleting all files:", error);
-    } finally {
-      e.target.disabled = false;
     }
   };
 

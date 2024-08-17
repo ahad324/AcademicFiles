@@ -53,6 +53,7 @@ const Table = ({ files, urlId }) => {
           <div className="flex justify-between items-center mt-2">
             <input
               type="text"
+              autoFocus
               placeholder="Search files"
               value={searchTerm}
               onChange={handleSearch}
@@ -64,7 +65,7 @@ const Table = ({ files, urlId }) => {
                 onClick={(e) => downloadAllFiles(urlId, e)}
               >
                 Download All Files{" "}
-                <span className="absolute -right-1 p-1 w-fit h-5 top-7 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-sm overflow-scroll">
+                <span className="absolute -right-1 p-1 min-w-5 max-w-fit h-5 top-7 bg-[--error-color] text-[--default-text-color] rounded-full flex items-center justify-center text-sm overflow-scroll">
                   {files.length}
                 </span>
               </button>
@@ -109,7 +110,10 @@ const Table = ({ files, urlId }) => {
                     <IoDownload size="1.5em" title="Download File" />
                   </a>
                   <button
-                    onClick={() => handleDelete(file.id, urlId || null)}
+                    onClick={(e) => {
+                      e.target.disabled = true;
+                      handleDelete(file.id, urlId || null);
+                    }}
                     className="text-[--error-color]"
                   >
                     <IoTrash size="1.5em" title="Delete File" />

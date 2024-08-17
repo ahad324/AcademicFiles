@@ -12,7 +12,7 @@ const DownloadingToast = () => {
   return (
     <div
       id="toast-default"
-      className="fixed bottom-4 right-4 flex items-center w-64 max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-custom dark:text-gray-400 dark:bg-gray-800 transition-opacity duration-300"
+      className="fixed bottom-4 border border-[--text-color] right-4 flex items-center w-64 max-w-xs p-4 text-[--text-color] bg-[--bg-color] rounded-lg shadow-custom transition-opacity duration-300"
       role="alert"
       aria-live="polite"
     >

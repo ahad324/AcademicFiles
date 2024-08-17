@@ -71,3 +71,19 @@ body{
 .form .error {
   @apply text-[--error-color] text-xs mt-1;
 }
+
+.popover{
+  @apply border-4 border-[--text-color] rounded-xl shadow-custom p-4 text-xl w-full xs:w-96 h-40 bg-[--bg-color] text-[--text-color];
+}
+.popover div{
+  @apply flex flex-col items-center justify-between w-full h-full text-center
+}
+.popover div span{
+  @apply flex justify-evenly items-center w-full
+}
+.popover div span button{
+  @apply border-2 rounded-lg border-[--text-color] p-2
+}
+.popover div span .confirm{
+  @apply text-[--default-text-color] bg-[--error-color] 
+}

@@ -25,7 +25,7 @@ const Card = ({ data, reference }) => {
         <>
           <FaRegFileAlt />
           <p
-            className="text-sm leading-tight mt-5 font-semibold overflow-hidden text-ellipsis whitespace-nowrap"
+            className="text-sm leading-tight mt-5 font-semibold overflow-hidden text-pretty whitespace-nowrap"
             title={data.desc}
           >
             {data.desc}

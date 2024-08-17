@@ -210,7 +210,7 @@ const ActionsProvider = ({ children }) => {
       });
 
       const files = filesByUrl[urlID] || [];
-      console.log(filesByUrl[urlID]);
+      // console.log(filesByUrl[urlID]);
 
       // Delete each file under the URL
       await Promise.all(

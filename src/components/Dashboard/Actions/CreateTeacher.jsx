@@ -46,6 +46,7 @@ const CreateTeacher = () => {
         </p>
         <div className="mb-3">
           <input
+            autoFocus
             type="text"
             placeholder="Username"
             {...register("username")}

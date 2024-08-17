@@ -60,6 +60,9 @@ const AllURLs = () => {
               email={teacher.email}
             />
           </div>
+          <span className="relative top-0 text-[--accent-color]">
+            Urls:{urlsByTeacher[teacher.TeacherID].length}
+          </span>
           <svg
             className={`w-3 h-3 ${
               expandedTeacher === teacher.TeacherID ? "rotate-180" : ""
@@ -113,7 +116,11 @@ const AllURLs = () => {
                       </button>
                       <button
                         className="text-[--error-color] ml-2 hover:text-red-600"
-                        onClick={() => deleteURL(teacher.TeacherID, urlID)}
+                        onClick={async (e) => {
+                          e.target.style.pointerEvents = "none";
+                          await deleteURL(teacher.TeacherID, urlID);
+                          e.target.style.pointerEvents = "all";
+                        }}
                       >
                         <FaTrash size="1.4em" />
                       </button>
