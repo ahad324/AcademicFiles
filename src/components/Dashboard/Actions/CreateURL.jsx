@@ -27,8 +27,11 @@ const CreateURL = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center w-screen h-screen">
       <div className="bg-[--dark-gray-color] p-6 rounded-lg shadow-custom border border-[--text-color] overflow-auto w-full xs:w-fit">
+        <h2 className="text-3xl text-[--default-text-color] w-full text-center mb-3 font-semibold">
+          Create URL
+        </h2>
         <div className="flex items-center justify-between h-28 xs:h-fit xs:justify-center mb-4 flex-col xs:flex-row ">
           <input
             type="text"

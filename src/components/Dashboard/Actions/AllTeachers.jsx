@@ -1,67 +1,91 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAction } from "@contexts/ActionsContext";
 import ProfileBadge from "@components/ProfileBadge";
+import { FaUserPlus } from "react-icons/fa";
+import { MdClose } from "react-icons/md";
+import CreateTeacher from "./CreateTeacher";
 
 const AllTeachers = () => {
   const { teachers, teacherImages } = useAction();
+  const [showModal, setshowModal] = useState(false);
 
   const headers = ["Sr No.", "ID", "Teacher", "Password"];
 
   return (
-    <div className="relative overflow-x-auto shadow-md rounded-lg border border-[--text-color]">
-      <table className="w-full text-sm text-left rtl:text-right text-[--light-gray-color] ">
-        <caption className="p-5 text-lg font-semibold text-center  bg-[--dark-gray-color] ">
-          Teachers List
-        </caption>
-        <thead className="text-xs text-[--light-gray-color] uppercase bg-[--medium-gray-color]">
-          <tr>
-            {headers.map((header, i) => (
-              <th key={i} scope="col" className="px-6 py-3">
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {teachers.length > 0 ? (
-            teachers.map((teacher, i) => (
-              <tr
-                key={teacher.TeacherID}
-                className=" border-b bg-[--dark-gray-color]"
-              >
-                <td
-                  scope="row"
-                  className="px-6 py-4 text-[--default-text-color]"
-                >
-                  {i + 1}
-                </td>
-                <td className="px-6 py-4">{teacher.TeacherID}</td>
-                <th
-                  scope="row"
-                  className="flex items-center px-6 py-4 whitespace-nowrap "
-                >
-                  <ProfileBadge
-                    ImageUrl={teacherImages[teacher.TeacherID]}
-                    name={teacher.username}
-                    email={teacher.email}
-                  />
-                </th>
-                <td className="px-6 py-4">{teacher.password}</td>
-              </tr>
-            ))
-          ) : (
+    <section className="flex flex-col ">
+      <div className="w-full flex justify-end items-center">
+        <button className="popup-button" onClick={() => setshowModal(true)}>
+          <FaUserPlus size="1.5em" className="mr-2" />
+          Create Teacher
+        </button>
+        {showModal && (
+          <div className="absolute top-0 right-0 backdrop-blur-xl z-10 bg-transparent">
+            <button
+              type="button"
+              className="popup-close-button"
+              onClick={() => setshowModal(false)}
+            >
+              <MdClose size="2em" />
+            </button>
+            <CreateTeacher />
+          </div>
+        )}
+      </div>
+      <div className="relative overflow-x-auto shadow-md rounded-lg border border-[--text-color]">
+        <table className="w-full text-sm text-left rtl:text-right text-[--light-gray-color] ">
+          <caption className="p-5 text-lg font-semibold text-center  bg-[--dark-gray-color] ">
+            Teachers List
+          </caption>
+          <thead className="text-xs text-[--light-gray-color] uppercase bg-[--medium-gray-color]">
             <tr>
-              <td
-                colSpan={headers.length}
-                className="px-6 py-4 text-center text-[--error-color] bg-[--dark-gray-color]"
-              >
-                No teachers available
-              </td>
+              {headers.map((header, i) => (
+                <th key={i} scope="col" className="px-6 py-3">
+                  {header}
+                </th>
+              ))}
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {teachers.length > 0 ? (
+              teachers.map((teacher, i) => (
+                <tr
+                  key={teacher.TeacherID}
+                  className=" border-b bg-[--dark-gray-color]"
+                >
+                  <td
+                    scope="row"
+                    className="px-6 py-4 text-[--default-text-color]"
+                  >
+                    {i + 1}
+                  </td>
+                  <td className="px-6 py-4">{teacher.TeacherID}</td>
+                  <th
+                    scope="row"
+                    className="flex items-center px-6 py-4 whitespace-nowrap "
+                  >
+                    <ProfileBadge
+                      ImageUrl={teacherImages[teacher.TeacherID]}
+                      name={teacher.username}
+                      email={teacher.email}
+                    />
+                  </th>
+                  <td className="px-6 py-4">{teacher.password}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={headers.length}
+                  className="px-6 py-4 text-center text-[--error-color] bg-[--dark-gray-color]"
+                >
+                  No teachers available
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 };
 

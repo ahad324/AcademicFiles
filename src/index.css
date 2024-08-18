@@ -57,7 +57,7 @@ body{
 }
 
 .form {
-  @apply backdrop-blur-md bg-[--dark-gray-color] border-2 border-[--text-color] rounded-3xl p-6 shadow-custom w-full max-w-lg;
+  @apply backdrop-blur-md bg-[--dark-gray-color] border-2 border-[--text-color] rounded-3xl p-6 shadow-custom w-full max-w-xl;
 }
 
 .form input {
@@ -86,4 +86,10 @@ body{
 }
 .popover div span .confirm{
   @apply text-[--default-text-color] bg-[--error-color] 
+}
+.popup-button{
+  @apply p-2 shadow-custom text-[--default-text-color] font-semibold border-2 border-[--text-color] rounded-lg bg-[--accent-color] mb-2 right-0 relative flex items-center justify-evenly hover:bg-green-700
+}
+.popup-close-button{
+  @apply z-[1] bg-[--secondary-color] absolute right-5 top-5 rounded-md p-2 inline-flex items-center justify-center text-[--default-text-color] shadow-custom hover:text-gray-200 
 }

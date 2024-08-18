@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
-import { FaUserPlus, FaLink, FaUsers, FaNetworkWired } from "react-icons/fa";
-import "@src/styles/NavTabs.css"; // Make sure the path is correct
-import { useAuth } from "../../contexts/AuthContext";
+import { FaUsers, FaNetworkWired } from "react-icons/fa";
+import "@src/styles/NavTabs.css";
+import { useAuth } from "@contexts/AuthContext";
 
 const Actions = () => {
   const { isAdmin } = useAuth();
@@ -15,41 +15,13 @@ const Actions = () => {
   return (
     <div className="p-4">
       {shouldRedirectAdmin && (
-        <Navigate to="/dashboard/actions/createteacher" replace />
+        <Navigate to="/dashboard/actions/allteachers" replace />
       )}
       {shouldRedirectTeacher && (
-        <Navigate to="/dashboard/actions/createurl" replace />
+        <Navigate to="/dashboard/actions/allurls" replace />
       )}
-      <nav className="border-b-4 rounded-b-3xl shadow-custom overflow-auto border-[--text-color] p-2 flex flex-col sm:flex-row items-center justify-center">
-        <ul className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-          {isAdmin && (
-            <li>
-              <NavLink
-                to="createteacher"
-                className={({ isActive }) =>
-                  `nav-link flex items-center ${
-                    isActive ? "nav-link-active" : "nav-link-inactive"
-                  }`
-                }
-              >
-                <FaUserPlus className="Tabsicon" />
-                <span className="ml-2">Create Teacher</span>
-              </NavLink>
-            </li>
-          )}
-          <li>
-            <NavLink
-              to="createurl"
-              className={({ isActive }) =>
-                `nav-link flex items-center ${
-                  isActive ? "nav-link-active" : "nav-link-inactive"
-                }`
-              }
-            >
-              <FaLink className="Tabsicon" />
-              <span className="ml-2">Create URL</span>
-            </NavLink>
-          </li>
+      <nav className="border-4 rounded-3xl shadow-custom overflow-auto border-[--text-color] p-2 flex items-center justify-center w-fit m-auto">
+        <ul className="flex flex-col justify-center items-center sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
           {isAdmin && (
             <li>
               <NavLink

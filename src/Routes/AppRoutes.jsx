@@ -1,27 +1,28 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Home from "../components/Home";
-import InvalidIDError from "../components/InvalidIDError";
+import Home from "@components/Home";
+import InvalidIDError from "@components/InvalidIDError";
 
 import Login from "../Auth/Login";
-import Error from "../components/Error/Error";
+import Error from "@components/Error/Error";
 import PrivateRoutes from "./PrivateRoutes";
+// Contexts import
+import { useAuth } from "@contexts/AuthContext";
+import { ActionsProvider } from "@contexts/ActionsContext";
 
-import Dashboard from "../components/Dashboard/Dashboard";
+import Dashboard from "@components/Dashboard/Dashboard";
 // Dashboard Components
-import Overview from "../components/Dashboard/Overview";
-import AllFiles from "../components/Dashboard/AllFiles";
-import Actions from "../components/Dashboard/Actions";
-import Settings from "../components/Dashboard/Settings";
+import Overview from "@components/Dashboard/Overview";
+import AllFiles from "@components/Dashboard/AllFiles";
+import Actions from "@components/Dashboard/Actions";
+import Settings from "@components/Dashboard/Settings";
 // Actions Components
-import { ActionsProvider } from "../contexts/ActionsContext";
-import CreateTeacher from "../components/Dashboard/Actions/CreateTeacher";
-import CreateURL from "../components/Dashboard/Actions/CreateURL";
-import AllTeachers from "../components/Dashboard/Actions/AllTeachers";
-import AllURLs from "../components/Dashboard/Actions/AllURLs";
+import AllTeachers from "@components/Dashboard/Actions/AllTeachers";
+import AllURLs from "@components/Dashboard/Actions/AllURLs";
 
 const AppRoutes = () => {
+  const { isAdmin } = useAuth();
   return (
     <Routes>
       <Route path="/" element={<InvalidIDError />} />
@@ -37,7 +38,6 @@ const AppRoutes = () => {
             path="overview"
             element={
               <ActionsProvider>
-                {" "}
                 <Overview />
               </ActionsProvider>
             }
@@ -51,9 +51,10 @@ const AppRoutes = () => {
               </ActionsProvider>
             }
           >
-            <Route path="createteacher" element={<CreateTeacher />} />
-            <Route path="createurl" element={<CreateURL />} />
-            <Route path="allteachers" element={<AllTeachers />} />
+            <Route
+              path="allteachers"
+              element={isAdmin ? <AllTeachers /> : <Error />}
+            />
             <Route path="allurls" element={<AllURLs />} />
           </Route>
           <Route path="settings" element={<Settings />} />

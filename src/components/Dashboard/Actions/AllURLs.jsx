@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { FiCopy } from "react-icons/fi";
+import { MdClose, MdAddLink } from "react-icons/md";
 import { useAction } from "@contexts/ActionsContext";
 import ProfileBadge from "@components/ProfileBadge";
 import { useAuth } from "@contexts/AuthContext";
 import Table from "../Table";
-import { useData } from "../../../contexts/DataContext";
+import { useData } from "@contexts/DataContext";
+import CreateURL from "./CreateURL";
 
 const AllURLs = () => {
   const {
@@ -22,6 +24,7 @@ const AllURLs = () => {
   const [expandedUrl, setExpandedUrl] = useState(null);
   const [ID, setID] = useState(null);
   const { isAdmin } = useAuth();
+  const [showModal, setshowModal] = useState(false);
 
   const handleAccordionClick = async (teacherId) => {
     setExpandedTeacher(expandedTeacher === teacherId ? null : teacherId);
@@ -154,51 +157,82 @@ const AllURLs = () => {
   );
 
   const renderUserUrls = () =>
-    urlsByTeacher[ID]?.map((urlID, index) => (
-      <div key={index} className="border border-[--text-color] rounded-lg">
-        <div
-          type="button"
-          className="flex items-center justify-between w-full p-5 font-medium text-[--light-gray-color] border border-b-0 rounded-xl shadow-custom bg-[--dark-gray-color] focus:ring-4 gap-3 cursor-pointer"
-          onClick={() => handleUrlClick(urlID)}
-        >
-          <span>{`${DomainURL}${urlID}`}</span>
-          <div className="flex items-center">
-            <button
-              className="text-blue-500 hover:text-[--accent-color] mr-2"
-              onClick={() => copyToClipboard(`${DomainURL}${urlID}`)}
-            >
-              <FiCopy size="1.4em" />
-            </button>
-            <button
-              className="text-[--error-color] hover:text-red-600"
-              onClick={() => deleteURL(ID, urlID)}
-            >
-              <FaTrash size="1.4em" />
-            </button>
+    urlsByTeacher[ID]?.length ? (
+      urlsByTeacher[ID].map((urlID, index) => (
+        <div key={index} className="border border-[--text-color] rounded-lg">
+          <div
+            type="button"
+            className="flex items-center justify-between w-full p-5 font-medium text-[--light-gray-color] border border-b-0 rounded-xl shadow-custom bg-[--dark-gray-color] focus:ring-4 gap-3 cursor-pointer"
+            onClick={() => handleUrlClick(urlID)}
+          >
+            <span>{`${DomainURL}${urlID}`}</span>
+            <div className="flex items-center">
+              <button
+                className="text-blue-500 hover:text-[--accent-color] mr-2"
+                onClick={() => copyToClipboard(`${DomainURL}${urlID}`)}
+              >
+                <FiCopy size="1.4em" />
+              </button>
+              <button
+                className="text-[--error-color] hover:text-red-600"
+                onClick={() => deleteURL(ID, urlID)}
+              >
+                <FaTrash size="1.4em" />
+              </button>
+            </div>
           </div>
+          {expandedUrl === urlID && filesByUrl[urlID] && (
+            <Table files={filesByUrl[urlID]} urlId={urlID} />
+          )}
         </div>
-        {expandedUrl === urlID && filesByUrl[urlID] && (
-          <Table files={filesByUrl[urlID]} urlId={urlID} />
-        )}
+      ))
+    ) : (
+      <div className="border border-[--text-color] flex justify-center items-center rounded-lg shadow-custom">
+        <td
+          colSpan=""
+          className="px-6 py-4 text-center text-[--error-color] font-semibold"
+        >
+          No URLs available
+        </td>
       </div>
-    ));
+    );
 
   return (
-    <div id="accordion-collapse" data-accordion="collapse">
-      {isAdmin ? (
-        teachers.length > 0 ? (
-          teachers.map(renderTeacherUrls)
-        ) : (
-          <div className="flex items-center justify-center">
-            <p className="px-6 py-4 text-center text-[--error-color] bg-[--dark-gray-color] rounded-lg border border-[--text-color]">
-              No teachers available
-            </p>
+    <section>
+      <div className="w-full flex justify-end items-center">
+        <button className="popup-button" onClick={() => setshowModal(true)}>
+          <MdAddLink size="1.5em" className="mr-2" />
+          Create URL
+        </button>
+        {showModal && (
+          <div className="absolute top-0 right-0 backdrop-blur-xl z-10 bg-transparent">
+            <button
+              type="button"
+              className="popup-close-button"
+              onClick={() => setshowModal(false)}
+            >
+              <MdClose size="2em" />
+            </button>
+            <CreateURL />
           </div>
-        )
-      ) : (
-        renderUserUrls()
-      )}
-    </div>
+        )}
+      </div>
+      <div id="accordion-collapse" data-accordion="collapse">
+        {isAdmin ? (
+          teachers.length > 0 ? (
+            teachers.map(renderTeacherUrls)
+          ) : (
+            <div className="flex items-center justify-center">
+              <p className="px-6 py-4 text-center text-[--error-color] bg-[--dark-gray-color] rounded-lg border border-[--text-color]">
+                No teachers available
+              </p>
+            </div>
+          )
+        ) : (
+          renderUserUrls()
+        )}
+      </div>
+    </section>
   );
 };
 
