@@ -45,49 +45,21 @@ const Overview = () => {
     <div className="p-6 text-[--text-color] rounded-lg h-fit min-h-screen flex flex-col space-y-6">
       <div className="text-[--text-color] text-center text-5xl p-6 rounded-lg">
         <h1 className="font-semibold">
-          Welcome, {userDetails.name || "Guest"}!👋
+          Welcome,{" "}
+          <span className="font-bold text-[--secondary-color]">
+            {userDetails.name || "Guest"}
+          </span>
+          !👋
         </h1>
         <p className="mt-2 text-lg">Here’s an overview of your dashboard.</p>
       </div>
 
       <div
         ref={ref}
-        className="flex flex-col items-center justify-between md:h-screen "
+        className="flex justify-between flex-col items-start md:flex-row  gap-4 p-4"
       >
-        <motion.div
-          drag
-          dragElastic={1}
-          dragConstraints={ref}
-          whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
-          dragMomentum={true}
-          dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-          className="w-fit bg-[--card-bg] p-4 border-4 md:p-10 border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl md:text-2xl"
-          style={{ cursor: "grab" }}
-        >
-          <h3 className="text-2xl md:text-3xl font-bold text-[--secondary-color]">
-            Storage Information 📊
-          </h3>
-          <CircularProgressBar percentage={storageData.percentage} size={50} />
-          <p className="mt-2 text-[--text-color]">
-            Total Storage 💾:{" "}
-            <span className="font-semibold">
-              {(() => {
-                const { value, unit } = calculation(storageData.total);
-                return <CountUp startVal={0} end={value} suffix={unit} />;
-              })()}
-            </span>
-          </p>
-          <p className="text-[--text-color]">
-            Storage Occupied 🗄️:{" "}
-            <span className="font-semibold">
-              {(() => {
-                const { value, unit } = calculation(storageData.occupied);
-                return <CountUp startVal={0} end={value} suffix={unit} />;
-              })()}
-            </span>
-          </p>
-        </motion.div>
-        <section className="w-full flex justify-between items-center -translate-y-[340px] md:-translate-y-[550px]">
+        {/* Left Widgets */}
+        <section className="flex flex-col items-start space-y-4 w-fit">
           <motion.div
             drag
             dragElastic={1}
@@ -95,9 +67,9 @@ const Overview = () => {
             whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
             dragMomentum={true}
             dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-            className="widget"
+            className="widget w-full"
           >
-            <p>Your Files 📁: </p>
+            <p>Your Files 📁:</p>
             <span className="ml-2 font-semibold md:text-2xl">
               <CountUp startVal={0} end={teacherFiles.length} />
             </span>
@@ -110,16 +82,53 @@ const Overview = () => {
               whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
               dragMomentum={true}
               dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-              className="widget"
+              className="widget w-full"
             >
-              <p>All Files 📦: </p>
+              <p>All Files 📦:</p>
               <span className="ml-2 font-semibold md:text-2xl">
                 <CountUp startVal={0} end={allFiles.length} />
               </span>
             </motion.div>
           )}
         </section>
-        <section className="w-full flex justify-around items-center -translate-y-0 flex-col md:-translate-y-[120%] md:flex-row">
+
+        {/* Center Card */}
+        <motion.div
+          drag
+          dragElastic={1}
+          dragConstraints={ref}
+          whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
+          dragMomentum={true}
+          dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
+          className="w-fit bg-[--card-bg] p-5 border-4 border-[--text-color] rounded-3xl shadow-custom backdrop-blur-3xl"
+          style={{ cursor: "grab" }}
+        >
+          <h3 className="text-2xl md:text-3xl font-bold text-[--secondary-color]">
+            Storage Information 📊
+          </h3>
+          <CircularProgressBar percentage={storageData.percentage} size={50} />
+          <p className="mt-2 text-[--text-color] md:text-2xl font-semibold">
+            Total Storage 💾:{" "}
+            <span className="font-bold">
+              {(() => {
+                const { value, unit } = calculation(storageData.total);
+                return <CountUp startVal={0} end={value} suffix={unit} />;
+              })()}
+            </span>
+          </p>
+          <p className="text-[--text-color] md:text-2xl font-semibold">
+            Storage Occupied 🗄️:{" "}
+            <span className="font-bold">
+              {(() => {
+                const { value, unit } = calculation(storageData.occupied);
+                return <CountUp startVal={0} end={value} suffix={unit} />;
+              })()}
+            </span>
+          </p>
+        </motion.div>
+
+        {/* Right Widgets */}
+        <section className="flex flex-col items-end space-y-4 w-fit">
           {isAdmin && (
             <>
               <motion.div
@@ -129,7 +138,7 @@ const Overview = () => {
                 whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
                 dragMomentum={true}
                 dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-                className="widget"
+                className="widget w-full"
               >
                 <span className="flex justify-center items-center">
                   <p>Teachers 👩‍🏫👨‍🏫:</p>
@@ -145,7 +154,7 @@ const Overview = () => {
                 whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
                 dragMomentum={true}
                 dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-                className="widget"
+                className="widget w-full"
               >
                 <span className="flex justify-center items-center">
                   <p>All URL's 🔗:</p>
@@ -156,7 +165,6 @@ const Overview = () => {
               </motion.div>
             </>
           )}
-
           <motion.div
             drag
             dragElastic={1}
@@ -164,7 +172,7 @@ const Overview = () => {
             whileDrag={{ scale: 1.1, cursor: "grabbing", zIndex: "1" }}
             dragMomentum={true}
             dragTransition={{ bounceStiffness: 200, bounceDamping: 7 }}
-            className="widget"
+            className="widget w-full"
           >
             <span className="flex justify-center items-center">
               <p>Your URL's 🔗:</p>

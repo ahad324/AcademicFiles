@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useAction } from "@contexts/ActionsContext";
 import ProfileBadge from "@components/ProfileBadge";
-import { FaUserPlus } from "react-icons/fa";
-import { MdClose } from "react-icons/md";
+import { FaUserPlus, FaTimes } from "react-icons/fa";
 import CreateTeacher from "./CreateTeacher";
 
 const AllTeachers = () => {
@@ -25,7 +24,7 @@ const AllTeachers = () => {
               className="popup-close-button"
               onClick={() => setshowModal(false)}
             >
-              <MdClose size="2em" />
+              <FaTimes size="2em" />
             </button>
             <CreateTeacher />
           </div>

@@ -49,7 +49,7 @@ body{
 
 .widget{
   cursor: grab;
-  @apply text-[14px] p-2 w-fit h-fit flex items-center justify-center border-4 rounded-3xl shadow-custom backdrop-blur-3xl bg-[--card-bg] border-[--text-color] md:text-xl md:p-6
+  @apply text-[14px] p-2 w-fit h-fit flex items-center justify-center border-4 rounded-lg md:rounded-2xl shadow-custom backdrop-blur-3xl bg-[--card-bg] border-[--text-color] md:text-xl md:p-4
 }
 .card{
   cursor: grab;

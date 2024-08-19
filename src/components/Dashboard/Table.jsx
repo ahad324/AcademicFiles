@@ -144,7 +144,7 @@ const Table = ({ files, urlId }) => {
                     className={`px-3 py-1 rounded-md ${
                       currentPage === number
                         ? "bg-[--accent-color] text-[--default-text-color]"
-                        : "bg-[--dark-gray-color] text-[--light-gray-color]"
+                        : "bg-[--dark-gray-color] text-[--light-gray-color] hover:bg-[--medium-gray-color]"
                     }`}
                   >
                     {number}

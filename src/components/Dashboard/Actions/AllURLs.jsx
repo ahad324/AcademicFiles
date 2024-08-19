@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaTimes } from "react-icons/fa";
 import { FiCopy } from "react-icons/fi";
-import { MdClose, MdAddLink } from "react-icons/md";
+import { MdAddLink } from "react-icons/md";
 import { useAction } from "@contexts/ActionsContext";
 import ProfileBadge from "@components/ProfileBadge";
 import { useAuth } from "@contexts/AuthContext";
@@ -99,7 +99,12 @@ const AllURLs = () => {
             <tbody className="bg-[--dark-gray-color]">
               {urlsByTeacher[teacher.TeacherID]?.length ? (
                 urlsByTeacher[teacher.TeacherID].map((urlID, index) => (
-                  <tr key={index} className="border-b">
+                  <tr
+                    key={index}
+                    className={`border-b ${
+                      expandedUrl === urlID && "bg-[--text-color]"
+                    }`}
+                  >
                     <td className="px-6 py-4">
                       <a
                         href={`${DomainURL}${urlID}`}
@@ -128,7 +133,7 @@ const AllURLs = () => {
                         <FaTrash size="1.4em" />
                       </button>
                       <button
-                        className="text-blue-500 hover:text-[--accent-color] ml-2"
+                        className="text-[--default-text-color] hover:bg-[--secondary-color-hover] border-[--bg-color] ml-2 border border-dashed p-1 rounded-lg bg-[--secondary-color]"
                         onClick={() => handleUrlClick(urlID)}
                       >
                         {expandedUrl === urlID ? "Hide Files" : "Show Files"}
@@ -211,7 +216,7 @@ const AllURLs = () => {
               className="popup-close-button"
               onClick={() => setshowModal(false)}
             >
-              <MdClose size="2em" />
+              <FaTimes size="2em" />
             </button>
             <CreateURL />
           </div>

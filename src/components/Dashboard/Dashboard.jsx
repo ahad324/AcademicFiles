@@ -264,8 +264,8 @@ const Dashboard = () => {
           isSidebarOpen ? "md:relative" : "md:absolute h-full"
         }`}
       >
-        <header className="w-full bg-[--bg-color] shadow-custom border-b-4 rounded-b-2xl border-[--text-color] text-[--text-color]">
-          <div className="flex items-center justify-between p-4">
+        <header className="w-full flex items-center justify-center  bg-[--bg-color] shadow-custom border-b-4 rounded-b-2xl border-[--text-color] text-[--text-color]">
+          <div className="flex items-center w-full justify-between p-4">
             <button
               className="rounded-lg focus:outline-none focus:shadow-outline"
               onClick={toggleSidebar}
