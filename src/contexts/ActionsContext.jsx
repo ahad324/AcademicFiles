@@ -107,6 +107,7 @@ const ActionsProvider = ({ children }) => {
         isLoading: false,
         autoClose: toastTimer,
       });
+      return true;
     } catch (err) {
       console.error("Error creating user:", err);
       toast.update(toastId, {
@@ -115,6 +116,7 @@ const ActionsProvider = ({ children }) => {
         isLoading: false,
         autoClose: toastTimer,
       });
+      return false;
     }
   };
 
@@ -183,6 +185,7 @@ const ActionsProvider = ({ children }) => {
         isLoading: false,
         autoClose: toastTimer,
       });
+      return true;
     } catch (err) {
       console.error("Error creating URL:", err);
       toast.update(toastId, {
@@ -191,6 +194,7 @@ const ActionsProvider = ({ children }) => {
         isLoading: false,
         autoClose: toastTimer,
       });
+      return false;
     }
   };
 

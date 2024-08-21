@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaTimes } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { FiCopy } from "react-icons/fi";
-import { MdAddLink } from "react-icons/md";
 import { useAction } from "@contexts/ActionsContext";
 import ProfileBadge from "@components/ProfileBadge";
 import { useAuth } from "@contexts/AuthContext";
@@ -24,27 +23,34 @@ const AllURLs = () => {
   const [expandedUrl, setExpandedUrl] = useState(null);
   const [ID, setID] = useState(null);
   const { isAdmin } = useAuth();
-  const [showModal, setshowModal] = useState(false);
+  const [deletingStates, setDeletingStates] = useState({});
 
   const handleAccordionClick = async (teacherId) => {
     setExpandedTeacher(expandedTeacher === teacherId ? null : teacherId);
     setExpandedUrl(expandedTeacher === teacherId && null);
   };
-
   const handleUrlClick = async (urlID) => {
     setExpandedUrl(expandedUrl === urlID ? null : urlID);
     if (expandedUrl !== urlID) {
       await fetchFilesByUrlID(urlID);
     }
   };
+  const handleDelete = async (teacherID, urlID) => {
+    setDeletingStates((prev) => ({ ...prev, [urlID]: true }));
+    try {
+      await deleteURL(teacherID, urlID);
+    } finally {
+      setDeletingStates((prev) => ({ ...prev, [urlID]: false }));
+    }
+  };
 
-  const fetchUserData = async () => {
+  const fetchingUserID = async () => {
     const id = await getUserID();
     setID(id);
   };
 
   useEffect(() => {
-    fetchUserData();
+    fetchingUserID();
   }, []);
 
   const renderTeacherUrls = (teacher) => (
@@ -54,6 +60,7 @@ const AllURLs = () => {
           type="button"
           className="flex items-center justify-between w-full p-5 font-medium text-[--light-gray-color] border border-b-0 rounded-xl shadow-custom bg-[--dark-gray-color] focus:ring-4 gap-3"
           aria-expanded={expandedTeacher === teacher.TeacherID}
+          aria-controls={`accordion-collapse-body-${teacher.TeacherID}`}
           onClick={() => handleAccordionClick(teacher.TeacherID)}
         >
           <div className="flex text-left">
@@ -124,11 +131,8 @@ const AllURLs = () => {
                       </button>
                       <button
                         className="text-[--error-color] ml-2 hover:text-red-600"
-                        onClick={async (e) => {
-                          e.target.style.pointerEvents = "none";
-                          await deleteURL(teacher.TeacherID, urlID);
-                          e.target.style.pointerEvents = "all";
-                        }}
+                        disabled={deletingStates[urlID] || false}
+                        onClick={() => handleDelete(teacher.TeacherID, urlID)}
                       >
                         <FaTrash size="1.4em" />
                       </button>
@@ -192,36 +196,16 @@ const AllURLs = () => {
         </div>
       ))
     ) : (
-      <div className="border border-[--text-color] flex justify-center items-center rounded-lg shadow-custom">
-        <td
-          colSpan=""
-          className="px-6 py-4 text-center text-[--error-color] font-semibold"
-        >
+      <tr className="border border-[--text-color] flex justify-center items-center rounded-lg shadow-custom">
+        <td className="px-6 py-4 text-center text-[--error-color] font-semibold">
           No URLs available
         </td>
-      </div>
+      </tr>
     );
 
   return (
     <section>
-      <div className="w-full flex justify-end items-center">
-        <button className="popup-button" onClick={() => setshowModal(true)}>
-          <MdAddLink size="1.5em" className="mr-2" />
-          Create URL
-        </button>
-        {showModal && (
-          <div className="absolute top-0 right-0 backdrop-blur-xl z-10 bg-transparent">
-            <button
-              type="button"
-              className="popup-close-button"
-              onClick={() => setshowModal(false)}
-            >
-              <FaTimes size="2em" />
-            </button>
-            <CreateURL />
-          </div>
-        )}
-      </div>
+      <CreateURL />
       <div id="accordion-collapse" data-accordion="collapse">
         {isAdmin ? (
           teachers.length > 0 ? (

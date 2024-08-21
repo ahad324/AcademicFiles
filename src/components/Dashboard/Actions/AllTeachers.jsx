@@ -1,35 +1,27 @@
 import React, { useState } from "react";
 import { useAction } from "@contexts/ActionsContext";
 import ProfileBadge from "@components/ProfileBadge";
-import { FaUserPlus, FaTimes } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import CreateTeacher from "./CreateTeacher";
 
 const AllTeachers = () => {
   const { teachers, teacherImages } = useAction();
-  const [showModal, setshowModal] = useState(false);
+
+  const [visiblePasswords, setVisiblePasswords] = useState({});
 
   const headers = ["Sr No.", "ID", "Teacher", "Password"];
 
+  const togglePasswordVisibility = (id) => {
+    setVisiblePasswords((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   return (
     <section className="flex flex-col ">
-      <div className="w-full flex justify-end items-center">
-        <button className="popup-button" onClick={() => setshowModal(true)}>
-          <FaUserPlus size="1.5em" className="mr-2" />
-          Create Teacher
-        </button>
-        {showModal && (
-          <div className="absolute top-0 right-0 backdrop-blur-xl z-10 bg-transparent">
-            <button
-              type="button"
-              className="popup-close-button"
-              onClick={() => setshowModal(false)}
-            >
-              <FaTimes size="2em" />
-            </button>
-            <CreateTeacher />
-          </div>
-        )}
-      </div>
+      <CreateTeacher />
+
       <div className="relative overflow-x-auto shadow-md rounded-lg border border-[--text-color]">
         <table className="w-full text-sm text-left rtl:text-right text-[--light-gray-color] ">
           <caption className="p-5 text-lg font-semibold text-center  bg-[--dark-gray-color] ">
@@ -68,7 +60,24 @@ const AllTeachers = () => {
                       email={teacher.email}
                     />
                   </th>
-                  <td className="px-6 py-4">{teacher.password}</td>
+                  <td className="px-6 py-4">
+                    {visiblePasswords[teacher.TeacherID]
+                      ? teacher.password
+                      : "********"}
+                    <button
+                      type="button"
+                      className="ml-2"
+                      onClick={() =>
+                        togglePasswordVisibility(teacher.TeacherID)
+                      }
+                    >
+                      {visiblePasswords[teacher.TeacherID] ? (
+                        <FaEyeSlash size="1.2em" />
+                      ) : (
+                        <FaEye size="1.2em" />
+                      )}
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (

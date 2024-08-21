@@ -9,11 +9,11 @@ const UploadFileButton = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { value, unit } = calculation(MAX_FILE_SIZE);
   const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files.length) return;
 
     setIsUploading(true);
-    const uploadSuccess = await handleFileUpload(file);
+    const uploadSuccess = await handleFileUpload(files);
 
     setIsUploading(false);
   };
@@ -33,6 +33,7 @@ const UploadFileButton = () => {
         </span>
         <input
           type="file"
+          multiple
           className="hidden"
           onChange={handleFileChange}
           disabled={isUploading}

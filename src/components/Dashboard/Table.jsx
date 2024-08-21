@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IoTrash, IoDownload } from "react-icons/io5";
 import { useData } from "@contexts/DataContext";
-import Loader from "../Loader";
 
 const Table = ({ files, urlId }) => {
   const { handleFileDelete, downloadAllFiles } = useData();
@@ -12,6 +11,7 @@ const Table = ({ files, urlId }) => {
   const filesPerPage = 10;
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredFiles, setFilteredFiles] = useState(files);
+  const [deletingFileIds, setDeletingFileIds] = useState(new Set());
 
   // Handle search input
   const handleSearch = (e) => {
@@ -36,8 +36,17 @@ const Table = ({ files, urlId }) => {
   const indexOfFirstFile = indexOfLastFile - filesPerPage;
   const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
 
-  const handleDelete = (fileId, urlId) => {
-    handleFileDelete(fileId, urlId);
+  const handleDelete = async (fileId, urlId) => {
+    setDeletingFileIds((prev) => new Set(prev).add(fileId));
+    try {
+      await handleFileDelete(fileId, urlId);
+    } finally {
+      setDeletingFileIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(fileId);
+        return newSet;
+      });
+    }
   };
 
   // Change page
@@ -85,7 +94,7 @@ const Table = ({ files, urlId }) => {
           {loading ? (
             <tr>
               <td colSpan={headers.length} className="px-6 py-4 text-center">
-                <Loader />
+                Loading...
               </td>
             </tr>
           ) : currentFiles.length > 0 ? (
@@ -110,10 +119,8 @@ const Table = ({ files, urlId }) => {
                     <IoDownload size="1.5em" title="Download File" />
                   </a>
                   <button
-                    onClick={(e) => {
-                      e.target.disabled = true;
-                      handleDelete(file.id, urlId || null);
-                    }}
+                    onClick={() => handleDelete(file.id, urlId || null)}
+                    disabled={deletingFileIds.has(file.id)}
                     className="text-[--error-color]"
                   >
                     <IoTrash size="1.5em" title="Delete File" />

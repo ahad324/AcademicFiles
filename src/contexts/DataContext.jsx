@@ -185,16 +185,20 @@ export const DataProvider = ({ children }) => {
     };
   }, [User, urlID]);
 
-  useEffect(() => {
-    const percentageUsed =
-      (parseFloat(storageOccupied) / storageData.total) * 100;
-    const formattedPercentage = percentageUsed.toFixed(2);
+  const updateStorageData = () => {
+    const percentageUsed = (
+      (storageOccupied / storageData.total) *
+      100
+    ).toFixed(2);
 
     setStorageData({
       total: TOTAL_STORAGE,
       occupied: storageOccupied,
-      percentage: formattedPercentage,
+      percentage: percentageUsed,
     });
+  };
+  useEffect(() => {
+    updateStorageData();
   }, [storageOccupied]);
 
   const getProfileImage = async (initials) => {
@@ -219,23 +223,91 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const handleFileUpload = async (file) => {
+  const zipFiles = async (files) => {
+    let toastId = toast.loading("Zipping Files...");
+    const zip = new JSZip();
+
+    // Iterate through the files and add them to the zip archive
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file) {
+        toast.update(toastId, {
+          render: `Adding ${file.name} to zip...`,
+        });
+        zip.file(file.name, file);
+      } else {
+        toast.update(toastId, {
+          render: "Failed to add file to zip.Please try again.",
+          type: "error",
+          isLoading: false,
+          autoClose: toastTimer,
+        });
+      }
+    }
+
+    try {
+      // Generate the zip file content as a Blob
+      const content = await zip.generateAsync({ type: "blob" });
+      toast.update(toastId, {
+        render: "Files zipped successfully.",
+        type: "success",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+      return content;
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Failed to zip files.Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: toastTimer,
+      });
+      console.error("Error generating zip file:", error);
+      throw error;
+    }
+  };
+
+  const handleFileUpload = async (files) => {
     if (!(await checkIDInDatabase(urlID))) return;
-    if (file.size > MAX_FILE_SIZE) {
+
+    // If multiple files, zip them before uploading
+    let fileToUpload;
+    if (files.length > 1) {
+      try {
+        let name = prompt("Enter the Name for the Zipped File:");
+        const zipContent = await zipFiles(files);
+        fileToUpload = new File([zipContent], `${name}.zip`, {
+          type: "application/zip",
+        });
+      } catch (error) {
+        toast.error("Error zipping files. Please try again.", {
+          autoClose: toastTimer,
+        });
+        return false;
+      }
+    } else {
+      fileToUpload = files[0];
+    }
+
+    if (fileToUpload.size > MAX_FILE_SIZE) {
       const { value, unit } = calculation(MAX_FILE_SIZE);
       toast.error(`File size exceeds ${value} ${unit}.`, {
         autoClose: toastTimer,
       });
       return false;
     }
-    const newStorageOccupied = storageOccupied + file.size;
+    const newStorageOccupied = storageOccupied + fileToUpload.size;
     if (newStorageOccupied > storageData.total) {
       toast.error("Not enough storage left.", { autoClose: toastTimer });
       return false;
     }
 
     try {
-      const response = await storage.createFile(BUCKET_ID, ID.unique(), file);
+      const response = await storage.createFile(
+        BUCKET_ID,
+        ID.unique(),
+        fileToUpload
+      );
       const { value, unit } = calculation(response.sizeOriginal); // Deconstruct value and unit
       const fileData = {
         id: response.$id,
@@ -259,7 +331,13 @@ export const DataProvider = ({ children }) => {
           ],
         }
       );
-      setAllFiles([...allFiles, fileData]);
+      setFilesByUrl((prevFilesByUrl) => {
+        const updatedFiles = [...(prevFilesByUrl[urlID] || []), fileData];
+        return {
+          ...prevFilesByUrl,
+          [urlID]: updatedFiles,
+        };
+      });
 
       setStorageOccupied(newStorageOccupied);
       toast.success("File uploaded successfully.", { autoClose: toastTimer });
@@ -279,15 +357,17 @@ export const DataProvider = ({ children }) => {
       await storage.deleteFile(BUCKET_ID, fileId);
       await databases.deleteDocument(DATABASE_ID, COLLECTION_ID_FILES, fileId);
 
-      // Update the local state for allFiles
-      setAllFiles((prevFiles) =>
-        prevFiles.filter((item) => item.id !== fileId)
-      );
-
-      // Update the teacherFiles state
-      setteacherFiles((prevFiles) =>
-        prevFiles.filter((item) => item.id !== fileId)
-      );
+      if (isAdmin) {
+        // Update the local state for allFiles
+        setAllFiles((prevFiles) =>
+          prevFiles.filter((item) => item.id !== fileId)
+        );
+      } else {
+        // Update the teacherFiles state
+        setteacherFiles((prevFiles) =>
+          prevFiles.filter((item) => item.id !== fileId)
+        );
+      }
       // Update urlFiles state
       if (urlid) {
         setFilesByUrl((prev) => ({
