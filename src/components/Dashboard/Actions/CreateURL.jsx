@@ -5,7 +5,8 @@ import { toast } from "react-toastify";
 import { MdAddLink } from "react-icons/md";
 
 const CreateURL = () => {
-  const { createURL, DomainURL, copyToClipboard, toastTimer } = useAction();
+  const { createURL, DomainURL, copyToClipboard, toastTimer, UrlsLimit } =
+    useAction();
   const [urlID, setUrlID] = useState("");
   const [showModal, setshowModal] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -57,6 +58,10 @@ const CreateURL = () => {
               <h2 className="text-3xl text-[--default-text-color] w-full text-center mb-3 font-semibold">
                 Create URL
               </h2>
+              <p className="text-xs text-center mb-2 text-[--error-color]">
+                <span className="text-[--light-gray-color]">Note:</span> You can
+                create a maximum of {UrlsLimit} Urls.
+              </p>
               <div className="flex items-center justify-between h-28 xs:h-fit xs:justify-center mb-4 flex-col xs:flex-row ">
                 <input
                   type="text"

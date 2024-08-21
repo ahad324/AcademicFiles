@@ -13,6 +13,7 @@ const TOTAL_STORAGE = 2147483648; // Total Storage In Bytes
 const toastTimer = 1000;
 const APP_NAME = "AcademicFileRelay";
 const DomainURL = "https://academicfiles.netlify.app/";
+const UrlsLimit = 10;
 
 const AuthContext = createContext();
 
@@ -191,6 +192,7 @@ export const AuthProvider = ({ children }) => {
     toastTimer,
     APP_NAME,
     DomainURL,
+    UrlsLimit,
     User,
     handleLogin,
     handleLogout,

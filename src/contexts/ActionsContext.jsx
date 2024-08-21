@@ -28,6 +28,7 @@ const ActionsProvider = ({ children }) => {
     DomainURL,
     setFilesByUrl,
     filesByUrl,
+    UrlsLimit,
   } = useData();
   const [teachers, setTeachers] = useState([]);
   const [teacherImages, setTeacherImages] = useState({});
@@ -168,9 +169,18 @@ const ActionsProvider = ({ children }) => {
           throw err;
         }
       }
-
-      // Update the URLs array
+      // Check if the teacher already has 10 URLs
       const currentURLs = document.urls || [];
+      if (currentURLs.length >= UrlsLimit) {
+        toast.update(toastId, {
+          render: `You can only create up to ${UrlsLimit} URLs.`,
+          type: "error",
+          isLoading: false,
+          autoClose: toastTimer,
+        });
+        return false;
+      }
+      // Update the URLs array
       const updatedURLs = [...currentURLs, urlID];
       await databases.updateDocument(
         DATABASE_ID,
@@ -273,6 +283,7 @@ const ActionsProvider = ({ children }) => {
     createURL,
     toastTimer,
     getUserID,
+    UrlsLimit,
   };
 
   return (

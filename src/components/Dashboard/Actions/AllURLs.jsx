@@ -196,11 +196,11 @@ const AllURLs = () => {
         </div>
       ))
     ) : (
-      <tr className="border border-[--text-color] flex justify-center items-center rounded-lg shadow-custom">
-        <td className="px-6 py-4 text-center text-[--error-color] font-semibold">
+      <div className="border border-[--text-color] flex justify-center items-center rounded-lg shadow-custom">
+        <p className="px-6 py-4 text-center text-[--error-color] font-semibold">
           No URLs available
-        </td>
-      </tr>
+        </p>
+      </div>
     );
 
   return (

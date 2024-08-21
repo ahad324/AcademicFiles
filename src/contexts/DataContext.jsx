@@ -32,6 +32,7 @@ export const DataProvider = ({ children }) => {
     DomainURL,
     MAX_FILE_SIZE,
     TOTAL_STORAGE,
+    UrlsLimit,
   } = useAuth();
   const [allFiles, setAllFiles] = useState([]);
   const [teacherFiles, setteacherFiles] = useState([]);
@@ -53,11 +54,18 @@ export const DataProvider = ({ children }) => {
 
   const fetchFilesByUrlID = async (urlID) => {
     try {
-      const response = await databases.listDocuments(
+      let response = await databases.listDocuments(
         DATABASE_ID,
         COLLECTION_ID_FILES,
         [Query.equal("urlId", urlID)]
       );
+      if (response.total > 25) {
+        response = await databases.listDocuments(
+          DATABASE_ID,
+          COLLECTION_ID_FILES,
+          [Query.equal("urlId", urlID), Query.limit(response.total)]
+        );
+      }
       const filesData = response.documents.map((file) => ({
         id: file.$id,
         desc: file.File[1],
@@ -74,7 +82,12 @@ export const DataProvider = ({ children }) => {
   };
   const fetchAllFiles = async () => {
     try {
-      const response = await storage.listFiles(BUCKET_ID);
+      let response = await storage.listFiles(BUCKET_ID);
+      if (response.total > 25) {
+        response = await storage.listFiles(BUCKET_ID, [
+          Query.limit(response.total),
+        ]);
+      }
       const filesData = response.files.map((file) => {
         const { value, unit } = calculation(file.sizeOriginal); // Deconstruct value and unit
         return {
@@ -103,11 +116,18 @@ export const DataProvider = ({ children }) => {
       // Check if id is passed otherwise get the current user id,
       const ID = await getUserID();
 
-      const response = await databases.listDocuments(
+      let response = await databases.listDocuments(
         DATABASE_ID,
         COLLECTION_ID_FILES,
         [Query.equal("TeacherID", ID)]
       );
+      if (response.total > 25) {
+        response = await databases.listDocuments(
+          DATABASE_ID,
+          COLLECTION_ID_FILES,
+          [Query.equal("TeacherID", ID), Query.limit(response.total)]
+        );
+      }
       const filesData = response.documents.map((file) => ({
         id: file.$id,
         desc: file.File[1],
@@ -563,6 +583,7 @@ export const DataProvider = ({ children }) => {
     filesDownloaded,
     totalFiles,
     showDownloadingToast,
+    UrlsLimit,
   };
   return (
     <DataContext.Provider value={contextData}>{children}</DataContext.Provider>
