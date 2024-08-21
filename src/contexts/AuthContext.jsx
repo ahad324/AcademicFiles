@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 const MAX_FILE_SIZE = 52428800; // Maximum file size in Bytes
 const TOTAL_STORAGE = 2147483648; // Total Storage In Bytes
 const toastTimer = 3000;
-const APP_NAME = "AcademicFiles";
+const APP_NAME = "AcademicFileRelay";
 const DomainURL = "https://academicfiles.netlify.app/";
 
 const AuthContext = createContext();
