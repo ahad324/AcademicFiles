@@ -287,16 +287,15 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const handleFileUpload = async (files) => {
+  const handleFileUpload = async (files, zipFileName) => {
     if (!(await checkIDInDatabase(urlID))) return;
 
     // If multiple files, zip them before uploading
     let fileToUpload;
     if (files.length > 1) {
       try {
-        let name = prompt("Enter the Name for the Zipped File:");
         const zipContent = await zipFiles(files);
-        fileToUpload = new File([zipContent], `${name}.zip`, {
+        fileToUpload = new File([zipContent], `${zipFileName}.zip`, {
           type: "application/zip",
         });
       } catch (error) {

@@ -11,6 +11,7 @@ const Foreground = ({ urlID }) => {
   const [loading, setLoading] = useState(true);
   const { filesByUrl } = useData();
   const { User } = useAuth();
+  const [visibleFiles, setVisibleFiles] = useState(25); // Number of files currently visible
 
   useEffect(() => {
     setLoading(false);
@@ -18,10 +19,14 @@ const Foreground = ({ urlID }) => {
 
   const files = filesByUrl[urlID] || [];
 
+  const loadMoreFiles = () => {
+    setVisibleFiles((prevVisibleFiles) => prevVisibleFiles + 25);
+  };
+
   return (
     <>
       {files.length > 0 && (
-        <div className="text-[--text-color]  absolute z-[2] top-20 w-full flex justify-end items-center">
+        <div className="text-[--text-color] absolute z-[2] top-20 w-full flex justify-end items-center">
           <h2 className="p-3 rounded-lg border-2 border-[--accent-color] backdrop-blur-3xl shadow-custom font-semibold">
             Files Count: <CountUp start={0} end={files.length} duration={5} />
           </h2>
@@ -34,9 +39,19 @@ const Foreground = ({ urlID }) => {
         {loading ? (
           <Loader />
         ) : files.length > 0 ? (
-          files.map((item) => (
-            <Card data={item} reference={ref} key={item.id} />
-          ))
+          <>
+            {files.slice(0, visibleFiles).map((item) => (
+              <Card data={item} reference={ref} key={item.id} />
+            ))}
+            {visibleFiles < files.length && (
+              <button
+                onClick={loadMoreFiles}
+                className="mt-5 p-3 bg-[--secondary-color] text-[--default-text-color] font-semibold rounded-lg shadow-custom hover:bg-[--secondary-color-hover]"
+              >
+                Load More
+              </button>
+            )}
+          </>
         ) : (
           <div
             className={`flex justify-center items-center flex-col w-full h-full ${

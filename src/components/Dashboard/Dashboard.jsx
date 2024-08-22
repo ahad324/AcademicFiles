@@ -20,9 +20,10 @@ import { calculation } from "@utils/utils";
 import DownloadingToast from "./DownloadingToast";
 
 const Dashboard = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { handleLogout, isAdmin } = useAuth();
   const { teacherFiles } = useData();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
 
   const {
     APP_NAME,
@@ -36,6 +37,18 @@ const Dashboard = () => {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+  const handleDeleteClick = () => {
+    setIsDeleteConfirmVisible(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteAllFiles();
+    setIsDeleteConfirmVisible(false);
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteConfirmVisible(false);
   };
 
   useEffect(() => {
@@ -142,10 +155,7 @@ const Dashboard = () => {
                 <li>
                   <button
                     className="inline-flex items-center w-full px-4 py-2 mt-1 text-base text-[--default-text-color] transition duration-500 ease-in-out transform rounded-lg hover:bg-[--error-color]"
-                    popovertarget={`${
-                      (isAdmin ? allFiles.length : teacherFiles.length) > 0 &&
-                      "DeleteAllFilesConfirmationMessage"
-                    }`}
+                    onClick={handleDeleteClick} // Show confirmation on click
                   >
                     <FaTrashAlt className="w-4 h-4" />
                     <span className="ml-4"> Delete All Files</span>
@@ -153,38 +163,6 @@ const Dashboard = () => {
                       {isAdmin ? allFiles.length : teacherFiles.length}
                     </span>
                   </button>
-                  <div
-                    id="DeleteAllFilesConfirmationMessage"
-                    className="popover"
-                    popover="true"
-                  >
-                    <div>
-                      <p>
-                        Are you sure?
-                        <br /> This action cannot be undone!
-                      </p>
-                      <span>
-                        <button
-                          onClick={() => {
-                            deleteAllFiles();
-                            setTimeout(() => {
-                              document
-                                .getElementById(
-                                  "DeleteAllFilesConfirmationMessage"
-                                )
-                                .hidePopover();
-                            }, 100);
-                          }}
-                          className="confirm"
-                        >
-                          Confirm
-                        </button>
-                        <button popovertarget="DeleteAllFilesConfirmationMessage">
-                          Cancel
-                        </button>
-                      </span>
-                    </div>
-                  </div>
                 </li>
               </ul>
               <div>
@@ -290,6 +268,32 @@ const Dashboard = () => {
           </div>
         </main>
       </div>
+      {/* Delete Confirmation Dialog */}
+      {isDeleteConfirmVisible && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-[--bg-color] p-6 rounded-lg shadow-custom text-[--text-color]">
+            <h2 className="text-lg font-bold">Confirm Deletion</h2>
+            <p className="text-sm mt-2">
+              Are you sure you want to delete all files? This action cannot be
+              undone.
+            </p>
+            <div className="flex justify-end mt-4">
+              <button
+                className="px-4 py-2 bg-[--error-color] rounded-lg hover:bg-red-600"
+                onClick={handleConfirmDelete}
+              >
+                Delete
+              </button>
+              <button
+                className="px-4 py-2 ml-2 bg-[--light-gray-color] rounded-lg hover:bg-[--medium-gray-color]"
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
