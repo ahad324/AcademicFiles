@@ -1,4 +1,10 @@
-import React, { useContext, createContext, useState, useEffect } from "react";
+import React, {
+  useContext,
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import {
   client,
   account,
@@ -34,7 +40,7 @@ const ActionsProvider = ({ children }) => {
   const [teacherImages, setTeacherImages] = useState({});
   const [urlsByTeacher, setUrlsByTeacher] = useState({});
 
-  const fetchURLS = async () => {
+  const fetchURLS = useCallback(async () => {
     try {
       const res = await databases.listDocuments(
         DATABASE_ID,
@@ -42,17 +48,18 @@ const ActionsProvider = ({ children }) => {
       );
       const teacherList = res.documents;
 
-      // Set initial URLs by teacher
       const urlsMap = {};
       const images = {};
-      teacherList.forEach((teacher) => {
+
+      const imagePromises = teacherList.map(async (teacher) => {
         urlsMap[teacher.TeacherID] = teacher.urls || [];
-        // Fetch and set images
-        getProfileImage(teacher.username).then((imageUrl) => {
-          images[teacher.TeacherID] = imageUrl;
-          setTeacherImages(images);
-        });
+        const imageUrl = await getProfileImage(teacher.username);
+        images[teacher.TeacherID] = imageUrl;
       });
+
+      await Promise.all(imagePromises);
+
+      setTeacherImages(images);
       setTeachers(teacherList);
       setUrlsByTeacher(urlsMap);
     } catch (error) {
@@ -61,7 +68,7 @@ const ActionsProvider = ({ children }) => {
         autoClose: toastTimer,
       });
     }
-  };
+  }, [getProfileImage, toastTimer]);
 
   useEffect(() => {
     fetchURLS();
