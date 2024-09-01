@@ -1,5 +1,5 @@
-## This is an upgraded version of Docs-Share.
-<!-- <h1 align="center">📜 <strong>Docs - Share</strong> 🤝</h1>
+## This is an upgraded version of DocsNow.
+<!-- <h1 align="center">📜 <strong>DocsNow</strong> 🤝</h1>
 
 <div align="center">
     <img src="https://skillicons.dev/icons?i=react,vite,tailwind,css,appwrite" alt="Tech Stack" />
