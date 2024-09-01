@@ -24,12 +24,13 @@ const AllURLs = () => {
   const [ID, setID] = useState(null);
   const { isAdmin } = useAuth();
   const [deletingStates, setDeletingStates] = useState({});
+  const [loadedUrls, setLoadedUrls] = useState({});
 
   const handleAccordionClick = async (teacherId) => {
     setExpandedTeacher(expandedTeacher === teacherId ? null : teacherId);
     setExpandedUrl(expandedTeacher === teacherId && null);
   };
-  const handleUrlClick = async (urlID) => {
+  const handleShowFiles = async (urlID) => {
     setExpandedUrl(expandedUrl === urlID ? null : urlID);
     if (expandedUrl !== urlID) {
       await fetchFilesByUrlID(urlID);
@@ -129,16 +130,18 @@ const AllURLs = () => {
                       >
                         <FiCopy size="1.4em" />
                       </button>
-                      <button
-                        className="text-[--error-color] ml-2 hover:text-red-600"
-                        disabled={deletingStates[urlID] || false}
-                        onClick={() => handleDelete(teacher.TeacherID, urlID)}
-                      >
-                        <FaTrash size="1.4em" />
-                      </button>
+                      {expandedUrl === urlID && (
+                        <button
+                          className="text-[--error-color] ml-2 hover:text-red-600"
+                          disabled={deletingStates[urlID] || false}
+                          onClick={() => handleDelete(teacher.TeacherID, urlID)}
+                        >
+                          <FaTrash size="1.4em" />
+                        </button>
+                      )}
                       <button
                         className="text-[--default-text-color] hover:bg-[--secondary-color-hover] border-[--bg-color] ml-2 border border-dashed p-1 rounded-lg bg-[--secondary-color]"
-                        onClick={() => handleUrlClick(urlID)}
+                        onClick={() => handleShowFiles(urlID)}
                       >
                         {expandedUrl === urlID ? "Hide Files" : "Show Files"}
                       </button>
@@ -172,7 +175,7 @@ const AllURLs = () => {
           <div
             type="button"
             className="flex items-center justify-between w-full p-5 font-medium text-[--light-gray-color] border border-b-0 rounded-xl shadow-custom bg-[--dark-gray-color] focus:ring-4 gap-3 cursor-pointer"
-            onClick={() => handleUrlClick(urlID)}
+            onClick={() => handleShowFiles(urlID)}
           >
             <span>{`${DomainURL}${urlID}`}</span>
             <div className="flex items-center">
@@ -182,12 +185,14 @@ const AllURLs = () => {
               >
                 <FiCopy size="1.4em" />
               </button>
-              <button
-                className="text-[--error-color] hover:text-red-600"
-                onClick={() => deleteURL(ID, urlID)}
-              >
-                <FaTrash size="1.4em" />
-              </button>
+              {expandedUrl === urlID && (
+                <button
+                  className="text-[--error-color] hover:text-red-600"
+                  onClick={() => deleteURL(ID, urlID)}
+                >
+                  <FaTrash size="1.4em" />
+                </button>
+              )}
             </div>
           </div>
           {expandedUrl === urlID && filesByUrl[urlID] && (
