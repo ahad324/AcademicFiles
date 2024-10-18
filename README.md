@@ -1,98 +1,129 @@
-## This is an upgraded version of DocsNow.
-<!-- <h1 align="center">📜 <strong>DocsNow</strong> 🤝</h1>
+# 📜 Academic Files 🚀
 
 <div align="center">
     <img src="https://skillicons.dev/icons?i=react,vite,tailwind,css,appwrite" alt="Tech Stack" />
 </div>
 
 <p align="center">
-    Welcome to <strong>My Awesome React App</strong>! 🚀 This application allows users to upload and download files publicly, featuring a clean and modern design, responsive components, and a secure admin interface. Below, you'll find details on how to get started, the technologies used, and more.
+    <em>This is an upgraded version of <a href="https://github.com/ahad324/DocNow">DocsNow</a></em>
+</p>
+<p align="center">
+    Welcome to <strong>Academic Files</strong>! 🌟 A powerful and user-friendly file sharing platform built with modern web technologies. Upload, download, and manage files with ease, all wrapped in a sleek and responsive interface.
 </p>
 
-## 📋 Table of Contents
+## 🌟 Features
 
-- [Features](#-features)
-- [Demo](#-demo)
-- [Technologies Used](#-technologies-used)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Contributing](#-contributing)
-- [Feedback](#-feedback)
+- 📤 **Easy File Upload**: Drag and drop or select files to upload
+- 📥 **Quick Downloads**: Download individual files or entire collections
+- 🔐 **Secure Admin Panel**: Manage files, users, and permissions
+- 🎨 **Responsive Design**: Looks great on desktop and mobile devices
+- 🌓 **Dark/Light Mode**: Choose your preferred theme
+- 📊 **Real-time Updates**: See changes instantly with live data updates
+- 🔗 **Shareable Links**: Create and manage shareable file links
+- 👥 **User Management**: Create and manage teacher accounts (Admin only)
+- 📈 **Storage Analytics**: View detailed storage usage information
 
-## ✨ Features
+## 🛠️ Tech Stack
 
-- 📁 **File Upload and Download**: Upload and download files without needing an account.
-- 🔒 **Admin Authentication**: Admin can log in to manage and delete files.
-- ⚡ **Real-time Updates**: Get real-time updates when files are uploaded or deleted.
-- 🖼️ **Responsive Design**: Fully responsive and mobile-friendly.
-- 🌐 **SEO Optimized**: Enhanced with SEO best practices for better search engine ranking.
-- 🎨 **Smooth Animations**: Utilizes Framer Motion for fluid drag-and-drop animations.
+- **Frontend**: React, Vite, Tailwind CSS
+- **Backend**: Appwrite
+- **State Management**: React Context API
+- **Form Handling**: React Hook Form with Zod validation
+- **Animations**: Framer Motion
+- **Icons**: React Icons
+- **Notifications**: React Toastify
 
-## 🎥 Demo
+## 🚀 Quick Start
 
-Check out the live demo of the application [here](https://soon-available.com).
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ahad324/AcademicFiles.git
+   cd AcademicFiles
+   ```
 
-## 🛠️ Technologies Used
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-- **React/Vite**: JavaScript library for building user interfaces.
-- **Appwrite**: Open-source backend server for web, mobile, and flutter developers.
-- **Framer Motion**: Powerful animation library for React.
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI development.
+3. Set up environment variables:
+   Create a `.env` file in the root directory and add your Appwrite credentials:
+   ```
+   VITE_APPWRITE_ENDPOINT=your_appwrite_endpoint
+   VITE_APPWRITE_PROJECT_ID=your_project_id
+   VITE_APPWRITE_BUCKET_ID=your_bucket_id
+   VITE_APPWRITE_DATABASE_ID=your_database_id
+   VITE_APPWRITE_COLLECTION_ID_TEACHERS=your_teachers_collection_id
+   VITE_APPWRITE_COLLECTION_ID_FILES=your_files_collection_id
+   ```
 
-## 🏗️ Installation
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-To get a local copy up and running, follow these steps:
+5. Open your browser and navigate to `http://localhost:5173`
 
-1. **Clone the repository:**
+## 📁 Project Structure
 
-    ```bash
-    git clone https://github.com/ahad324/Docs-share.git
-    ```
+- `src/`: Source code
+  - `components/`: React components
+  - `contexts/`: React context providers
+  - `utils/`: Utility functions
+  - `styles/`: CSS files
+  - `assets/`: Images and other static assets
+- `public/`: Public assets
 
-2. **Navigate to the project directory:**
+## 🔑 Key Components
 
-    ```bash
-    cd Docs-share
-    ```
+- **Dashboard**: Central hub for file management and analytics
+- **File Upload**: Handles file uploads with progress tracking
+- **File List**: Displays uploaded files with search and pagination
+- **User Management**: Admin interface for managing teacher accounts
+- **Settings**: User profile and account settings
 
-3. **Install dependencies:**
+## 🛡️ Authentication
 
-    ```bash
-    npm install
-    ```
+AcademicFiles uses Appwrite for authentication. Users can:
+- Log in with email and password
+- Update their profile information
+- Change password
+- Block their account (for security purposes)
 
-4. **Create an .env file and add your Appwrite credentials:**
+## 🎨 Styling
 
-    ```bash
-    VITE_PROJECT_ID=your_project_id
-    VITE_ENDPOINT=your_appwrite_endpoint
-    VITE_BUCKET_ID=your_bucket_id
-    ```
+The project uses Tailwind CSS for styling, with custom color variables for easy theming:
 
-5. **Start the development server:**
+## 🔄 State Management
 
-    ```bash
-    npm run dev
-    ```
+React Context API is used for global state management:
+- `AuthContext`: Handles user authentication and profile
+- `DataContext`: Manages file and storage data
+- `ActionsContext`: Handles admin actions like creating teachers and URLs
 
-## 🚀 Usage
+## 📱 Responsive Design
 
-Once the server is running, you can:
+The app is fully responsive, adapting to various screen sizes:
 
-- Upload and download files directly from the main interface.
-- Access the admin panel by navigating to `/admin` and logging in with the admin credentials.
-- Enjoy the smooth animations and responsive design on any device.
+## 🚀 Deployment
+
+The project is configured for easy deployment on platforms like Netlify or Vercel. A `_redirects` file is included for proper routing:
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## 🙏 Acknowledgements
 
-## 💬 Feedback
+- [React](https://reactjs.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Appwrite](https://appwrite.io/)
+- [Framer Motion](https://www.framer.com/motion/)
+- [React Icons](https://react-icons.github.io/react-icons/)
 
-I’d love to hear from you! If you have any feedback or suggestions, please open an issue or submit a pull request. Your stars ⭐ and contributions help me keep improving and maintaining this project! 🙌 -->
+---
+
+<p align="center">
+  Made with ❤️ by AbdulAhad
+</p>
